@@ -1,6 +1,6 @@
 <?php
 
-/*
+/* 
  * The MIT License
  *
  * Copyright 2019 Clayn <clayn_osmato@gmx.de>.
@@ -24,34 +24,8 @@
  * THE SOFTWARE.
  */
 
-function test_db_connection() {
+function openConnection() {
     include_once __DIR__.'/config.php';
     $config = getDBConfiguration();
-    $mysqli = new mysqli($config->url, $config->user, $config->password, $config->database);
-
-    if ($mysqli->connect_error) {
-        die('Connect Error (' . $mysqli->connect_errno . ') '
-                . $mysqli->connect_error);
-        echo "Failed to connect: ". $mysqli->connect_errno . ' - '
-                . $mysqli->connect_error;
-    }
-
-    if (mysqli_connect_error()) {
-        die('Connect Error (' . mysqli_connect_errno() . ') '
-                . mysqli_connect_error());
-        echo "Failed to connect: ".  mysqli_connect_errno() . ' - '
-                .mysqli_connect_error();
-    }
-    else {
-        echo "Connection established";
-    }
-}
-
-function  test_ninja() {
-    include_once  __DIR__.'/domain.php';
-    $ninja=new Ninja("Naruto", "", 1, Element::WIND);
-    echo "Created the Ninja: ".$ninja->name." <br>";
-    echo "Image: ".$ninja->image."<br>";
-    echo "Id: ".$ninja->id."<br>";
-    echo "Element: ".$ninja->element."<br>";
+    return new mysqli($config->url, $config->user, $config->password, $config->database);
 }

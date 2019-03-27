@@ -6,7 +6,7 @@
     </head>
     <body>
         <?php
-            include_once './test.php';
+            include_once __DIR__.'/test.php';
             test_ninja();
         ?>
     </body>
