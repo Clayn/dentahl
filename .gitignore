@@ -12,3 +12,4 @@ buildNumber.properties
 !/.mvn/wrapper/maven-wrapper.jar
 /Web/API/nbproject/private/
 /Web/dentahl/nbproject/private/
+*.html
