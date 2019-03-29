@@ -31,19 +31,25 @@ import java.util.Objects;
  * @author Clayn <clayn_osmato@gmx.de>
  */
 public class Ninja {
-    private final String name;
-    private final URL image;
-    private final int id;
-    private final Element element;
+
+    private String name;
+    private URL image;
+    private int id;
+    private transient Element elementType;
+    private int element;
+
+    public Ninja() {
+    }
 
     public Ninja(String name, URL image, int id, Element element) {
-        if(id<0) {
+        if (id < 0) {
             throw new IllegalArgumentException();
         }
         this.name = Objects.requireNonNull(name);
         this.image = image;
         this.id = id;
-        this.element = Objects.requireNonNull(element);
+        this.element = element == null ? -1 : element.ordinal();
+        this.elementType = element;
     }
 
     public String getName() {
@@ -58,12 +64,63 @@ public class Ninja {
         return id;
     }
 
-    public Element getElement() {
+    public int getElement() {
         return element;
+    }
+
+    public Element getElementType() {
+        return elementType == null ? element < 0 || element >= Element.values().length ? null : Element.values()[element] : elementType;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setImage(URL image) {
+        this.image = image;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setElementType(Element elementType) {
+        this.element = elementType == null ? -1 : elementType.ordinal();
+        this.elementType = elementType;
+    }
+
+    public void setElement(int element) {
+        this.element = element;
+        this.elementType = element < 0 || element >= Element.values().length ? null : Element.values()[element];
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Ninja other = (Ninja) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "Ninja{" + "name=" + name + ", image=" + image + ", id=" + id + ", element=" + element + '}';
+        return "Ninja{" + "name=" + name + ", image=" + image + ", id=" + id + ", element=" + getElementType() + '}';
     }
 }

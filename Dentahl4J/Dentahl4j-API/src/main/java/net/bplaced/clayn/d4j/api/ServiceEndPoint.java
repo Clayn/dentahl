@@ -1,5 +1,3 @@
-<?php
-
 /*
  * The MIT License
  *
@@ -23,26 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package net.bplaced.clayn.d4j.api;
 
-function test_db_connection() {
-    include_once __DIR__.'/config.php';
-    $config = getDBConfiguration();
-    $mysqli = new mysqli($config->url, $config->user, $config->password, $config->database);
+/**
+ *
+ * @author Clayn <clayn_osmato@gmx.de>
+ */
+public abstract class ServiceEndPoint {
+    private final String baseUrl;
 
-    if ($mysqli->connect_error) {
-        die('Connect Error (' . $mysqli->connect_errno . ') '
-                . $mysqli->connect_error);
-        echo "Failed to connect: ". $mysqli->connect_errno . ' - '
-                . $mysqli->connect_error;
+    public ServiceEndPoint(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
-    if (mysqli_connect_error()) {
-        die('Connect Error (' . mysqli_connect_errno() . ') '
-                . mysqli_connect_error());
-        echo "Failed to connect: ".  mysqli_connect_errno() . ' - '
-                .mysqli_connect_error();
+    public String getBaseUrl() {
+        return baseUrl;
     }
-    else {
-        echo "Connection established";
-    }
+    
 }

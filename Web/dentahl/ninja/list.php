@@ -48,8 +48,4 @@ while ($row = $result->fetch_assoc()) {
     $ninjas[] = $ninja;
 }
 
-foreach ($ninjas as $nin) {
-    $json = json_encode($nin);
-    echo $json;
-    echo "<br>";
-}
+echo json_encode($ninjas);

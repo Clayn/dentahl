@@ -1,9 +1,7 @@
-<?php
-
 /*
  * The MIT License
  *
- * Copyright 2019 Clayn <clayn_osmato@gmx.de>.
+ * Copyright 2019 Your Organisation.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,26 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package net.bplaced.clayn.d4j.data;
 
-function test_db_connection() {
-    include_once __DIR__.'/config.php';
-    $config = getDBConfiguration();
-    $mysqli = new mysqli($config->url, $config->user, $config->password, $config->database);
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.scene.image.Image;
+import net.bplaced.clayn.d4j.domain.Ninja;
 
-    if ($mysqli->connect_error) {
-        die('Connect Error (' . $mysqli->connect_errno . ') '
-                . $mysqli->connect_error);
-        echo "Failed to connect: ". $mysqli->connect_errno . ' - '
-                . $mysqli->connect_error;
+/**
+ *
+ * @author Clayn <clayn_osmato@gmx.de>
+ */
+public class DomainData {
+    private static final DomainData INSTANCE=new DomainData();
+    private final ObservableList<Ninja> ninjas=FXCollections.observableArrayList();
+    private final ObservableMap<Ninja,Image> ninjaImages=FXCollections.observableHashMap();
+    
+    private DomainData() {
     }
 
-    if (mysqli_connect_error()) {
-        die('Connect Error (' . mysqli_connect_errno() . ') '
-                . mysqli_connect_error());
-        echo "Failed to connect: ".  mysqli_connect_errno() . ' - '
-                .mysqli_connect_error();
+    public static DomainData getInstance() {
+        return INSTANCE;
     }
-    else {
-        echo "Connection established";
+
+    public ObservableList<Ninja> getNinjas() {
+        return ninjas;
     }
+
+    public ObservableMap<Ninja, Image> getNinjaImages() {
+        return ninjaImages;
+    }
+    
 }

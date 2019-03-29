@@ -24,8 +24,10 @@
  * THE SOFTWARE.
  */
 
-function openConnection() {
+function openConnection($charset="utf8mb4") {
     include_once __DIR__.'/config.php';
     $config = getDBConfiguration();
-    return new mysqli($config->url, $config->user, $config->password, $config->database);
+    $mysqli= new mysqli($config->url, $config->user, $config->password, $config->database);
+    \mysqli_set_charset($mysqli, $charset);
+    return $mysqli;
 }

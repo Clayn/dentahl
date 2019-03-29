@@ -1,5 +1,3 @@
-<?php
-
 /*
  * The MIT License
  *
@@ -23,26 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package net.bplaced.clayn.d4j.api;
 
-function test_db_connection() {
-    include_once __DIR__.'/config.php';
-    $config = getDBConfiguration();
-    $mysqli = new mysqli($config->url, $config->user, $config->password, $config->database);
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Objects;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
+import net.bplaced.clayn.d4j.domain.Ninja;
 
-    if ($mysqli->connect_error) {
-        die('Connect Error (' . $mysqli->connect_errno . ') '
-                . $mysqli->connect_error);
-        echo "Failed to connect: ". $mysqli->connect_errno . ' - '
-                . $mysqli->connect_error;
+/**
+ *
+ * @author Clayn <clayn_osmato@gmx.de>
+ */
+public class NinjaServiceEndpoint extends ServiceEndPoint{
+    
+    public NinjaServiceEndpoint(String baseUrl) {
+        super(Objects.requireNonNull(baseUrl)+"/ninja/");
     }
-
-    if (mysqli_connect_error()) {
-        die('Connect Error (' . mysqli_connect_errno() . ') '
-                . mysqli_connect_error());
-        echo "Failed to connect: ".  mysqli_connect_errno() . ' - '
-                .mysqli_connect_error();
-    }
-    else {
-        echo "Connection established";
+    
+    public List<Ninja> getNinjaList() throws IOException{
+        HttpResponse<JsonNode> response=Unirest.get(getBaseUrl()+"list.php")
+                .asJson();
+        JsonNode node=response.getBody();
+        String json=node.toString();
+        final Type type = new TypeToken<List<Ninja>>() {
+            }.getType();
+        Gson gson=new GsonBuilder()
+                .create();
+        return gson.fromJson(json, type);
     }
 }

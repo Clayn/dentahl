@@ -56,12 +56,16 @@ abstract class BasicEnum {
     }
 }
 
-abstract class Element extends BasicEnum {
-    const FIRE=0;
-    const WIND=1;
-    const LIGHTNING=2;
-    const EARTH=3;
-    const WATER=4;
+class Element  {
+    var $name="";
+    var $image="";
+    var $id=-1;
+    
+    public function __construct($name,$image,$id) {
+        $this->name=$name;
+        $this->image=$image;
+        $this->id=$id;
+    }
 }
 
 class Ninja {

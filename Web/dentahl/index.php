@@ -5,9 +5,6 @@
         <title>Hello World</title>
     </head>
     <body>
-        <?php
-            include_once __DIR__.'/test.php';
-            test_ninja();
-        ?>
+        <meta http-equiv="refresh" content="0;url=util/elements.php">
     </body>
 </html>

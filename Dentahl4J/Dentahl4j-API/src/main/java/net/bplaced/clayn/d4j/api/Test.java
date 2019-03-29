@@ -1,5 +1,3 @@
-<?php
-
 /*
  * The MIT License
  *
@@ -23,26 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package net.bplaced.clayn.d4j.api;
 
-function test_db_connection() {
-    include_once __DIR__.'/config.php';
-    $config = getDBConfiguration();
-    $mysqli = new mysqli($config->url, $config->user, $config->password, $config->database);
+import java.io.IOException;
+import java.util.List;
+import kong.unirest.Unirest;
+import net.bplaced.clayn.d4j.domain.Ninja;
 
-    if ($mysqli->connect_error) {
-        die('Connect Error (' . $mysqli->connect_errno . ') '
-                . $mysqli->connect_error);
-        echo "Failed to connect: ". $mysqli->connect_errno . ' - '
-                . $mysqli->connect_error;
-    }
+/**
+ *
+ * @author Clayn <clayn_osmato@gmx.de>
+ */
+public class Test {
 
-    if (mysqli_connect_error()) {
-        die('Connect Error (' . mysqli_connect_errno() . ') '
-                . mysqli_connect_error());
-        echo "Failed to connect: ".  mysqli_connect_errno() . ' - '
-                .mysqli_connect_error();
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) throws IOException {
+        NinjaServiceEndpoint end=new NinjaServiceEndpoint("http://clayn.bplaced.net/dentahl");
+        List<Ninja> ninjas=end.getNinjaList();
+        for(Ninja n:ninjas) {
+            System.out.println("Found: "+n);
+        }
+        Unirest.shutDown();
     }
-    else {
-        echo "Connection established";
-    }
+    
 }

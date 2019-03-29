@@ -24,25 +24,27 @@
  * THE SOFTWARE.
  */
 
-function test_db_connection() {
-    include_once __DIR__.'/config.php';
-    $config = getDBConfiguration();
-    $mysqli = new mysqli($config->url, $config->user, $config->password, $config->database);
+include_once __DIR__ . '/../config.php';
+include_once __DIR__ . '/../tools.php';
+include_once __DIR__ . '/../domain.php';
 
-    if ($mysqli->connect_error) {
-        die('Connect Error (' . $mysqli->connect_errno . ') '
-                . $mysqli->connect_error);
-        echo "Failed to connect: ". $mysqli->connect_errno . ' - '
-                . $mysqli->connect_error;
-    }
+$SQL = "SELECT * FROM `Element` ORDER BY id ASC";
 
-    if (mysqli_connect_error()) {
-        die('Connect Error (' . mysqli_connect_errno() . ') '
-                . mysqli_connect_error());
-        echo "Failed to connect: ".  mysqli_connect_errno() . ' - '
-                .mysqli_connect_error();
-    }
-    else {
-        echo "Connection established";
-    }
+$db = openConnection();
+$stmt = $db->prepare($SQL);
+
+$elements = array();
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows === 0) {
+    exit('No rows');
 }
+while ($row = $result->fetch_assoc()) {
+    $id = $row['id'];
+    $name = $row['name'];
+    $image = $row['image'];
+    $element = new Element($name, $image, $id);
+    $elements[] = $element;
+}
+
+echo json_encode($elements);
