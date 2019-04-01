@@ -2,4 +2,4 @@ jobs:
   include:
     - stage: "Java"                
       name: "Java Build"            
-      script: ./java
+      script: ./java.yml
