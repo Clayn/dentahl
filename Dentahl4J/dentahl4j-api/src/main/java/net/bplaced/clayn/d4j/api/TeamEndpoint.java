@@ -11,7 +11,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import kong.unirest.MultipartBody;
 import kong.unirest.Unirest;
+import net.bplaced.clayn.d4j.domain.ErrorMessage;
 import net.bplaced.clayn.d4j.domain.Ninja;
 import net.bplaced.clayn.d4j.domain.Team;
 import org.json.JSONArray;
@@ -44,6 +46,34 @@ public class TeamEndpoint extends ServiceEndPoint
     public List<Team> getTeams() throws IOException
     {
         return getTeams(null);
+    }
+
+    public ErrorMessage uploadTeam(Team team) throws IOException
+    {
+        MultipartBody body = Unirest.post(
+                getSafeURL() + "upload.php/")
+                .field("name", "API-Test13")
+                .field("description", "Desc")
+                .field("token", "test");
+        for (Map.Entry<Integer, Ninja> entry : team.getPositions().entrySet())
+        {
+            if (entry.getValue() != null)
+            {
+                body = body.field(entry.getKey() + "",
+                        "" + entry.getValue().getId());
+            }
+        }
+        HttpResponse<JsonNode> response = body.asJson();
+        System.out.println(response.getStatus());
+        System.out.println(response.getBody());
+        JSONObject obj = response.getBody().getObject();
+        if (obj.has("message"))
+        {
+            return new ErrorMessage("");
+        } else
+        {
+            return new ErrorMessage(obj.getString("message"));
+        }
     }
 
     public List<Team> getTeams(List<Ninja> ninjaList) throws IOException

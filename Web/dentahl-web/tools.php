@@ -47,3 +47,18 @@ function map_to_element($row) {
     $image = $row['image'];
     return new Element($name, $image, $id);
 }
+
+function check_token($token) {
+    $db = openConnection();
+    $sql = "SELECT * FROM `User` WHERE `token`=?";
+    $stmt = $db->prepare($sql);
+    if (!$stmt) {
+        return false;
+    }
+    $stmt->bind_param("s", $token);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $rowCount = mysqli_num_rows($res);
+    $db->close();
+    return $rowCount > 0;
+}

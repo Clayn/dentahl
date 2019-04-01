@@ -28,21 +28,24 @@ include_once __DIR__ . '/../config.php';
 include_once __DIR__ . '/../tools.php';
 include_once __DIR__ . '/../domain.php';
 
-$SQL = "SELECT * FROM `Ninja` ORDER BY id ASC";
+function get_ninjas() {
+    $SQL = "SELECT * FROM `Ninja` ORDER BY id ASC";
 
-$db = openConnection();
-$stmt = $db->prepare($SQL);
+    $db = openConnection();
+    $stmt = $db->prepare($SQL);
 
-$ninjas = array();
-$stmt->execute();
-$result = $stmt->get_result();
-if ($result->num_rows === 0) {
-    exit('No rows');
+    $ninjas = array();
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows === 0) {
+        exit('No rows');
+    }
+    while ($row = $result->fetch_assoc()) {
+
+        $ninja = map_to_ninja($row);
+        $ninjas[] = $ninja;
+    }
+    return $ninjas;
 }
-while ($row = $result->fetch_assoc()) {
 
-    $ninja = map_to_ninja($row);
-    $ninjas[] = $ninja;
-}
-
-echo json_encode($ninjas);
+echo json_encode(get_ninjas());

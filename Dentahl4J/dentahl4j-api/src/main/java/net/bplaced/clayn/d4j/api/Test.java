@@ -24,6 +24,7 @@
 package net.bplaced.clayn.d4j.api;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import kong.unirest.Unirest;
 import net.bplaced.clayn.d4j.domain.Team;
@@ -45,6 +46,12 @@ public class Test
         for (Team t : teams)
         {
             System.out.println("Found: " + t);
+
+        }
+        if (!teams.isEmpty())
+        {
+            Team t = teams.stream().sorted(Comparator.comparingInt(Team::getId)).findFirst().get();
+            System.out.println("REsponse " + end.uploadTeam(t).getMessage());
         }
         Unirest.shutDown();
     }

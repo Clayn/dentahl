@@ -58,6 +58,16 @@ abstract class BasicEnum {
 
 }
 
+class ErrorMessage {
+
+    var $message = "";
+
+    public function __construct($message) {
+        $this->message = $message;
+    }
+
+}
+
 class Element {
 
     var $name = "";
