@@ -66,6 +66,16 @@ public class DentahlConfiguration
         }
     }
 
+    public boolean isSet(String key)
+    {
+        return get(key, null) != null;
+    }
+
+    public boolean isSet(Configuration<?> key)
+    {
+        return get(key, null) != null;
+    }
+
     public void set(String key, String val)
     {
         properties.setProperty(key, val);

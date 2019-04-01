@@ -1,6 +1,7 @@
 package net.bplaced.clayn.d4j.api;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,13 @@ public class TeamEndpoint extends ServiceEndPoint
         hostBase = baseUrl;
     }
 
+    public TeamEndpoint(URL baseUrl)
+    {
+        super(Objects.requireNonNull(baseUrl).toString() + "/team/");
+        hostBase = baseUrl.toString();
+
+    }
+
     public List<Team> getTeams() throws IOException
     {
         return getTeams(null);
@@ -57,8 +65,7 @@ public class TeamEndpoint extends ServiceEndPoint
                     Collectors.toMap(Ninja::getId,
                             Function.identity())));
         }
-
-        HttpResponse<JsonNode> response = Unirest.get(getBaseUrl() + "list.php")
+        HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list.php")
                 .asJson();
         JsonNode node = response.getBody();
         JSONArray arr = node.getArray();

@@ -1,5 +1,8 @@
 package net.bplaced.clayn.d4j.fx;
 
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -18,6 +21,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import jfxtras.styles.jmetro8.JMetro;
 import kong.unirest.Unirest;
+import net.bplaced.clayn.d4j.config.DentahlConfiguration;
+import net.bplaced.clayn.d4j.config.Keys;
 import net.bplaced.clayn.d4j.fx.pre.D4JFXPreloader;
 
 public class MainApp extends Application
@@ -25,6 +30,18 @@ public class MainApp extends Application
 
     @Override
     public void init() throws Exception
+    {
+        disableSSLCertificateCheck();
+        DentahlConfiguration.getConfiguration().load();
+        if (!DentahlConfiguration.getConfiguration().isSet(Keys.REST_BASE))
+        {
+            DentahlConfiguration.getConfiguration().set(Keys.REST_BASE, new URL(
+                    "http://clayn.bplaced.net/dentahl"));
+            DentahlConfiguration.getConfiguration().store();
+        }
+    }
+
+    private void disableSSLCertificateCheck() throws NoSuchAlgorithmException, KeyManagementException
     {
         TrustManager[] trustAllCerts = new TrustManager[]
         {

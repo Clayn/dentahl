@@ -3,9 +3,7 @@ package net.bplaced.clayn.d4j.fx;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +23,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import kong.unirest.Unirest;
 import net.bplaced.clayn.d4j.api.TeamEndpoint;
+import net.bplaced.clayn.d4j.config.DentahlConfiguration;
+import net.bplaced.clayn.d4j.config.Keys;
 import net.bplaced.clayn.d4j.data.DomainData;
 import net.bplaced.clayn.d4j.domain.Element;
 import net.bplaced.clayn.d4j.domain.Ninja;
@@ -51,7 +51,6 @@ public class MainWindowController implements Initializable
     @FXML
     private MenuItem clearMenu;
     private TeamView team = new TeamView();
-    private final Map<Ninja, Node> ninjaNodes = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle rb)
@@ -171,7 +170,8 @@ public class MainWindowController implements Initializable
         try
         {
             List<Team> teams = new TeamEndpoint(
-                    "http://clayn.bplaced.net/dentahl").getTeams(
+                    DentahlConfiguration.getConfiguration().get(
+                            Keys.REST_BASE)).getTeams(
                     DomainData.getInstance().getNinjas());
             DomainData.getInstance().getTeams().addAll(teams.stream().map(
                     FXTeam::fromDomainTeam).collect(Collectors.toList()));

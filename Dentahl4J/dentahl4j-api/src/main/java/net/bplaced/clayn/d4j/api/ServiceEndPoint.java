@@ -23,6 +23,8 @@
  */
 package net.bplaced.clayn.d4j.api;
 
+import java.net.URL;
+
 /**
  *
  * @author Clayn <clayn_osmato@gmx.de>
@@ -32,9 +34,19 @@ public abstract class ServiceEndPoint
 
     protected final String baseUrl;
 
+    protected String getSafeURL()
+    {
+        return baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+    }
+
     public ServiceEndPoint(String baseUrl)
     {
         this.baseUrl = baseUrl;
+    }
+
+    public ServiceEndPoint(URL baseUrl)
+    {
+        this(baseUrl.toString());
     }
 
     public String getBaseUrl()

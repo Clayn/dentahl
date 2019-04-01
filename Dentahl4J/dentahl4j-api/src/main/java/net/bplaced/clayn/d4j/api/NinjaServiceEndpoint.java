@@ -28,6 +28,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import kong.unirest.HttpResponse;
@@ -39,20 +40,29 @@ import net.bplaced.clayn.d4j.domain.Ninja;
  *
  * @author Clayn <clayn_osmato@gmx.de>
  */
-public class NinjaServiceEndpoint extends ServiceEndPoint{
-    
-    public NinjaServiceEndpoint(String baseUrl) {
-        super(Objects.requireNonNull(baseUrl)+"/ninja/");
+public class NinjaServiceEndpoint extends ServiceEndPoint
+{
+
+    public NinjaServiceEndpoint(String baseUrl)
+    {
+        super(Objects.requireNonNull(baseUrl) + "/ninja/");
     }
-    
-    public List<Ninja> getNinjaList() throws IOException{
-        HttpResponse<JsonNode> response=Unirest.get(getBaseUrl()+"list.php")
+
+    public NinjaServiceEndpoint(URL baseUrl)
+    {
+        super(baseUrl.toString() + "/ninja/");
+    }
+
+    public List<Ninja> getNinjaList() throws IOException
+    {
+        HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list.php")
                 .asJson();
-        JsonNode node=response.getBody();
-        String json=node.toString();
-        final Type type = new TypeToken<List<Ninja>>() {
-            }.getType();
-        Gson gson=new GsonBuilder()
+        JsonNode node = response.getBody();
+        String json = node.toString();
+        final Type type = new TypeToken<List<Ninja>>()
+        {
+        }.getType();
+        Gson gson = new GsonBuilder()
                 .create();
         return gson.fromJson(json, type);
     }

@@ -49,6 +49,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro8.JMetro;
 import net.bplaced.clayn.d4j.api.NinjaServiceEndpoint;
+import net.bplaced.clayn.d4j.config.DentahlConfiguration;
+import net.bplaced.clayn.d4j.config.Keys;
 import net.bplaced.clayn.d4j.data.DomainData;
 import net.bplaced.clayn.d4j.domain.Ninja;
 
@@ -206,7 +208,8 @@ public class D4JFXPreloader implements Initializable
                     setText("Lade Ninjas");
                     setProgress(-1);
                     ninjas.addAll(new NinjaServiceEndpoint(
-                            "http://clayn.bplaced.net/dentahl").getNinjaList());
+                            DentahlConfiguration.getConfiguration().get(
+                                    Keys.REST_BASE)).getNinjaList());
                     File dir = new File("data", "ninjas");
                     dir.mkdirs();
                     double count = ninjas.size();
