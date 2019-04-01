@@ -25,24 +25,19 @@
  */
 
 function test_db_connection() {
-    include_once __DIR__.'/config.php';
+    include_once __DIR__ . '/config.php';
     $config = getDBConfiguration();
     $mysqli = new mysqli($config->url, $config->user, $config->password, $config->database);
 
     if ($mysqli->connect_error) {
         die('Connect Error (' . $mysqli->connect_errno . ') '
                 . $mysqli->connect_error);
-        echo "Failed to connect: ". $mysqli->connect_errno . ' - '
-                . $mysqli->connect_error;
     }
 
     if (mysqli_connect_error()) {
         die('Connect Error (' . mysqli_connect_errno() . ') '
                 . mysqli_connect_error());
-        echo "Failed to connect: ".  mysqli_connect_errno() . ' - '
-                .mysqli_connect_error();
-    }
-    else {
+    } else {
         echo "Connection established";
     }
 }
