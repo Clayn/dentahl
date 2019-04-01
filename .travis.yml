@@ -1,3 +1,5 @@
-before_install: cd Dentahl4J
-
-language: java
+jobs:  
+  include:
+    - stage: "Java"                
+      name: "Java Build"            
+      script: ./java

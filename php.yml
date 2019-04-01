@@ -1,0 +1,5 @@
+before_install: cd Web/dentahl-web
+
+language: php
+php:
+  - '7.0'
