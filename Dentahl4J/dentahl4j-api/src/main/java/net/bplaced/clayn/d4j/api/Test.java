@@ -51,7 +51,9 @@ public class Test
         if (!teams.isEmpty())
         {
             Team t = teams.stream().sorted(Comparator.comparingInt(Team::getId)).findFirst().get();
-            System.out.println("REsponse " + end.uploadTeam(t).getMessage());
+            t.setName(t.getName() + "1");
+            System.out.println(
+                    "REsponse " + end.uploadTeam(t, "test").getMessage());
         }
         Unirest.shutDown();
     }

@@ -3,6 +3,7 @@ package net.bplaced.clayn.d4j.api;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,13 +49,13 @@ public class TeamEndpoint extends ServiceEndPoint
         return getTeams(null);
     }
 
-    public ErrorMessage uploadTeam(Team team) throws IOException
+    public ErrorMessage uploadTeam(Team team, String token) throws IOException
     {
         MultipartBody body = Unirest.post(
                 getSafeURL() + "upload.php/")
-                .field("name", "API-Test13")
-                .field("description", "Desc")
-                .field("token", "test");
+                .field("name", team.getName())
+                .field("description", team.getDescription())
+                .field("token", token);
         for (Map.Entry<Integer, Ninja> entry : team.getPositions().entrySet())
         {
             if (entry.getValue() != null)
@@ -64,10 +65,8 @@ public class TeamEndpoint extends ServiceEndPoint
             }
         }
         HttpResponse<JsonNode> response = body.asJson();
-        System.out.println(response.getStatus());
-        System.out.println(response.getBody());
         JSONObject obj = response.getBody().getObject();
-        if (obj.has("message"))
+        if (!obj.has("message"))
         {
             return new ErrorMessage("");
         } else
@@ -98,23 +97,28 @@ public class TeamEndpoint extends ServiceEndPoint
         HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list.php")
                 .asJson();
         JsonNode node = response.getBody();
-        JSONArray arr = node.getArray();
-        List<Team> teams = new ArrayList<>(arr.length());
-        for (int i = 0; i < arr.length(); ++i)
+        if (node != null && node.isArray())
         {
-            Team t = new Team();
-            JSONObject obj = arr.getJSONObject(i);
-            t.setName(obj.getString("name"));
-            t.setDescription(obj.getString("description"));
-            t.setId(obj.getInt("id"));
-            JSONArray pos = obj.getJSONArray("positions");
-            for (int j = 0; j < pos.length(); ++j)
+            JSONArray arr = node.getArray();
+            List<Team> teams = new ArrayList<>(arr.length());
+            for (int i = 0; i < arr.length(); ++i)
             {
-                t.getPositions().put(j, tmpNinjas.getOrDefault(pos.getInt(j),
-                        null));
+                Team t = new Team();
+                JSONObject obj = arr.getJSONObject(i);
+                t.setName(obj.getString("name"));
+                t.setDescription(obj.getString("description"));
+                t.setId(obj.getInt("id"));
+                JSONArray pos = obj.getJSONArray("positions");
+                for (int j = 0; j < pos.length(); ++j)
+                {
+                    t.getPositions().put(j,
+                            tmpNinjas.getOrDefault(pos.getInt(j),
+                                    null));
+                }
+                teams.add(t);
             }
-            teams.add(t);
+            return teams;
         }
-        return teams;
+        return Collections.emptyList();
     }
 }

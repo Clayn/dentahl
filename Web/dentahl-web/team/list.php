@@ -38,30 +38,31 @@ $teams = array();
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result->num_rows === 0) {
-    exit('No rows');
-}
-while ($row = $result->fetch_assoc()) {
-    $id = $row['id'];
-    $name = $row['name'];
-    $description = $row['description'];
-    $team = new Team($name, $description, $id);
-    $teams[] = $team;
-}
-$stmt->close();
-for ($i = 0; $i < sizeof($teams); $i++) {
-    $teamStat = $db->prepare($SQL_POSITIONS);
-    if (!$teamStat) {
-        echo "TeamStat " . $teamStat;
-        echo "Error: " . mysqli_error($db);
+    
+} else {
+    while ($row = $result->fetch_assoc()) {
+        $id = $row['id'];
+        $name = $row['name'];
+        $description = $row['description'];
+        $team = new Team($name, $description, $id);
+        $teams[] = $team;
     }
-    $team = $teams[$i];
-    $teamStat->bind_param("i", $team->id);
-    $teamStat->execute();
-    $teamResult = $teamStat->get_result();
-    while ($teamRow = $teamResult->fetch_assoc()) {
-        $pos = $teamRow['position'];
-        $nin = $teamRow['ninja_id'];
-        $team->positions[$pos] = $nin;
+    $stmt->close();
+    for ($i = 0; $i < sizeof($teams); $i++) {
+        $teamStat = $db->prepare($SQL_POSITIONS);
+        if (!$teamStat) {
+            echo "TeamStat " . $teamStat;
+            echo "Error: " . mysqli_error($db);
+        }
+        $team = $teams[$i];
+        $teamStat->bind_param("i", $team->id);
+        $teamStat->execute();
+        $teamResult = $teamStat->get_result();
+        while ($teamRow = $teamResult->fetch_assoc()) {
+            $pos = $teamRow['position'];
+            $nin = $teamRow['ninja_id'];
+            $team->positions[$pos] = $nin;
+        }
     }
 }
 

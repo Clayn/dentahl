@@ -77,7 +77,7 @@ public class NinjaViewSkin extends SkinBase<NinjaView>
             @Override
             public void handle(MouseEvent event)
             {
-                if (control.getNinja() == null || !control.isDragable())
+                if (control.getNinja() == null || !control.isDragable() || (!control.isDragable() && !control.isDragableDetail()))
                 {
                     return;
                 }
@@ -96,7 +96,7 @@ public class NinjaViewSkin extends SkinBase<NinjaView>
             public void handle(DragEvent event)
             {
                 if (event.getGestureSource() != pane
-                        && event.getDragboard().hasContent(NINJA_DATA_FORMAT) && control.isDragable())
+                        && event.getDragboard().hasContent(NINJA_DATA_FORMAT) && control.isDragable() && control.isDragableDetail())
                 {
                     event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                 }
@@ -108,7 +108,7 @@ public class NinjaViewSkin extends SkinBase<NinjaView>
             public void handle(DragEvent event)
             {
                 if (control.isTeamPosition() && event.getGestureSource() != pane
-                        && event.getDragboard().hasContent(NINJA_DATA_FORMAT) && control.isDragable())
+                        && event.getDragboard().hasContent(NINJA_DATA_FORMAT) && control.isDragable() && control.isDragableDetail())
                 {
                     if (!pane.getStyleClass().contains("team-drag-over"))
                     {

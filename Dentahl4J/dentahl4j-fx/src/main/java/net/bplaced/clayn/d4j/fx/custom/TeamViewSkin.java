@@ -3,6 +3,8 @@ package net.bplaced.clayn.d4j.fx.custom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.SkinBase;
@@ -20,6 +22,7 @@ public class TeamViewSkin extends SkinBase<TeamView>
 {
 
     private final List<NinjaView> views = new ArrayList<>();
+    private final IntegerProperty ninjaCount = new SimpleIntegerProperty(0);
 
     TeamViewSkin(TeamView control)
     {
@@ -49,13 +52,33 @@ public class TeamViewSkin extends SkinBase<TeamView>
             {
                 NinjaView view = new NinjaView();
                 view.setPrefSize(100, 50);
+                view.ninjaProperty().addListener(new ChangeListener<Ninja>()
+                {
+                    @Override
+                    public void changed(
+                            ObservableValue<? extends Ninja> observable,
+                            Ninja oldValue, Ninja newValue)
+                    {
+                        if (oldValue != null && newValue == null)
+                        {
+                            ninjaCount.set(ninjaCount.get() - 1);
+                        } else if (oldValue == null && newValue != null)
+                        {
+                            ninjaCount.set(ninjaCount.get() + 1);
+                        }
+                    }
+
+                });
                 view.setNinja(
                         control.getTeam() == null ? null : control.getTeam().getPositions().get(
                         views.size()));
+
                 view.setXPosition(x);
                 view.setYPosition(y);
                 view.dragableAccessProperty().bind(
                         control.teamProperty().isNull());
+                view.dragableDetailProperty().bind(ninjaCount.lessThan(
+                        4));
                 GridPane.setColumnIndex(view, x);
                 GridPane.setRowIndex(view, y);
                 grid.getChildren().add(view);

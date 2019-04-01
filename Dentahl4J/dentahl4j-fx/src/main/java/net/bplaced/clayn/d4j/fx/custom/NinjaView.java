@@ -44,10 +44,17 @@ public class NinjaView extends Control
     private final IntegerProperty yPosition = new SimpleIntegerProperty(-1);
     private final ReadOnlyBooleanWrapper dragable = new ReadOnlyBooleanWrapper(
             true);
+    private final ReadOnlyBooleanWrapper dragableDetail = new ReadOnlyBooleanWrapper(
+            true);
 
     public boolean isDragable()
     {
         return dragable.get();
+    }
+
+    public boolean isDragableDetail()
+    {
+        return dragableDetail.get();
     }
 
     ReadOnlyBooleanWrapper dragableAccessProperty()
@@ -58,6 +65,11 @@ public class NinjaView extends Control
     public ReadOnlyBooleanProperty dragableProperty()
     {
         return dragable.getReadOnlyProperty();
+    }
+
+    ReadOnlyBooleanWrapper dragableDetailProperty()
+    {
+        return dragableDetail;
     }
 
     public int getYPosition()

@@ -1,5 +1,9 @@
 package net.bplaced.clayn.d4j.fx.custom;
 
+import java.util.Objects;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import net.bplaced.clayn.d4j.domain.Ninja;
@@ -15,6 +19,25 @@ public class FXTeam extends Team
 
     private final ObservableMap<Integer, Ninja> positions = FXCollections.observableMap(
             super.getPositions());
+    private final ReadOnlyIntegerWrapper ninjaCount = new ReadOnlyIntegerWrapper(
+            -1);
+
+    public FXTeam()
+    {
+        ninjaCount.bind(Bindings.createIntegerBinding(
+                () -> (int) positions.values().stream().filter(Objects::nonNull).count(),
+                positions));
+    }
+
+    public int getNinjaCount()
+    {
+        return ninjaCount.get();
+    }
+
+    public ReadOnlyIntegerProperty ninjaCountProperty()
+    {
+        return ninjaCount.getReadOnlyProperty();
+    }
 
     @Override
     public ObservableMap<Integer, Ninja> getPositions()

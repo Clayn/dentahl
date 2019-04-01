@@ -38,14 +38,20 @@ function get_ninjas() {
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows === 0) {
-        exit('No rows');
-    }
-    while ($row = $result->fetch_assoc()) {
+        
+    } else {
+        while ($row = $result->fetch_assoc()) {
 
-        $ninja = map_to_ninja($row);
-        $ninjas[] = $ninja;
+            $ninja = map_to_ninja($row);
+            $ninjas[] = $ninja;
+        }
     }
     return $ninjas;
 }
 
-echo json_encode(get_ninjas());
+$ninjas = get_ninjas();
+if (count($ninjas) >= 0) {
+    echo json_encode($ninjas);
+} else {
+    echo "[]";
+}
