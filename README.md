@@ -9,9 +9,12 @@ The online storage uses a MySQL database with an PHP access layer which can be h
 ## Download
 At the moment the client application will be released in two versions.
 
- 1. Platform independent Java version. Works with Java 1.8 (Java >1.8 causes errors)
- 2. Windows application
+ 1. Platform independent Java version. Works with Java 1.8 (Java >1.8 causes errors). [Download](https://github.com/Clayn/dentahl/releases/download/v0.1.0/Dentahl4J-0.1.0.jar)
+ 2. Windows application. [Download](https://github.com/Clayn/dentahl/releases/download/v0.1.0/Dentahl4J-0.1.0.zip)
+
+The current release version is: 0.1.0
+
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzNTAxMzk1ODQsODAxMTczMTUxXX0=
+eyJoaXN0b3J5IjpbLTEwMzkyNzkwLDgwMTE3MzE1MV19
 -->
