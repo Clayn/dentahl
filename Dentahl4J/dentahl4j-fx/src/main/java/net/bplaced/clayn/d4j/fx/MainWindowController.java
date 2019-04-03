@@ -50,7 +50,7 @@ public class MainWindowController implements Initializable
     private ChoiceBox<FXTeam> teamList;
     @FXML
     private MenuItem clearMenu;
-    private TeamView team = new TeamView();
+    private final TeamView team = new TeamView();
 
     @Override
     public void initialize(URL url, ResourceBundle rb)
@@ -63,7 +63,7 @@ public class MainWindowController implements Initializable
             @Override
             public String toString(FXTeam object)
             {
-                return object == null ? "" : object.getName() + "\n(" + object.getDescription() + ")";
+                return object == null ? "" : object.getName();
             }
 
             @Override

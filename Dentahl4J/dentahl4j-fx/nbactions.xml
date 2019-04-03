@@ -22,5 +22,14 @@
                 <runfx.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Dglass.disableGrab=true -jar "${project.build.directory}/${project.build.finalName}.jar"</runfx.args>
                 <jpda.listen>true</jpda.listen>
             </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-distribute</actionName>
+            <displayName>distribute</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>package</goal>
+                <goal>jfx:native</goal>
+            </goals>
         </action>        
     </actions>
