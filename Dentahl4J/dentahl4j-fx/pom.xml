@@ -4,14 +4,14 @@
 
     <groupId>net.bplaced.clayn</groupId>
     <artifactId>d4j-fx</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>Dentahl4J-FX</name>
     <parent>
         <groupId>net.bplaced.clayn</groupId>
         <artifactId>d4j</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.1.0</version>
     </parent>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,7 +28,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>Dentahl4J</finalName>
+                    <finalName>Dentahl4J-${project.version}</finalName>
                     <outputDirectory>dist</outputDirectory>
                     <archive>
                         <manifest>
@@ -54,7 +54,7 @@
                 <configuration>
                     <vendor>clayn_osmato@gmx.de</vendor>
                     <mainClass>${mainClass}</mainClass>
-                    <appName>Dentahl4J</appName>
+                    <appName>Dentahl4J-${project.version}</appName>
                     
                     <icon>${basedir}/src/main/deploy/package/windows/Dentahl4J.ico</icon>
                     <nativeOutputDir>dist</nativeOutputDir>
@@ -173,7 +173,7 @@
         <dependency>
             <groupId>net.bplaced.clayn</groupId>
             <artifactId>d4j-api</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.1.0</version>
         </dependency>
     </dependencies>
 </project>
