@@ -38,7 +38,7 @@ function get_ninjas() {
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows === 0) {
-        
+        echo json_encode($ninjas);
     } else {
         while ($row = $result->fetch_assoc()) {
 
