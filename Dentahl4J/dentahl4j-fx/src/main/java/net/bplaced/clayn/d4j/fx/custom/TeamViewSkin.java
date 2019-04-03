@@ -4,15 +4,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.TextArea;
@@ -44,6 +48,7 @@ public class TeamViewSkin extends SkinBase<TeamView>
     private final TextField nameField = new TextField();
     private final TextArea descriptionArea = new TextArea();
     private final TextField tokenField = new TextField();
+    CheckBox local = new CheckBox("Lokal speichern");
     private final TeamView teamView;
 
     TeamViewSkin(TeamView control)
@@ -149,7 +154,12 @@ public class TeamViewSkin extends SkinBase<TeamView>
         tokenBox.getChildren().addAll(l, tokenField);
         Button upload = new Button("Speichern");
         upload.setOnAction(this::uploadTeam);
-        details.getChildren().addAll(nameBox, descriptionBox, tokenBox, upload);
+        upload.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> nameField.getText() == null || nameField.getText().trim().isEmpty(),
+                nameField.textProperty()));
+
+        details.getChildren().addAll(nameBox, descriptionBox, tokenBox, local,
+                upload);
         nameField.editableProperty().bind(details.disableProperty().not());
         box.disableProperty().bind(control.teamProperty().isNotNull());
         box.getChildren().addAll(grid, details);
@@ -167,17 +177,26 @@ public class TeamViewSkin extends SkinBase<TeamView>
         {
             t.getPositions().put(i, views.get(i).getNinja());
         }
+        if (t.getPositions().values().stream().allMatch(Objects::isNull))
+        {
+            Alert al = new Alert(Alert.AlertType.INFORMATION);
+            al.setHeaderText(null);
+            al.setTitle("Error");
+            al.setContentText("Ein Team benötigt mindestens ein Ninja");
+            al.showAndWait();
+            return;
+        }
         try
         {
-            ErrorMessage mes = end.uploadTeam(t, tokenField.getText());
+            ErrorMessage mes = local.isSelected() ? end.saveTeam(t) : end.uploadTeam(
+                    t, tokenField.getText());
             try
             {
                 Long.parseLong(mes.getMessage());
                 DomainData.getInstance().getTeams().add(t);
-            } catch (Exception ex)
+            } catch (NumberFormatException ex)
             {
                 System.out.println("Error uploading");
-                ex.printStackTrace();
             }
         } catch (IOException ex)
         {

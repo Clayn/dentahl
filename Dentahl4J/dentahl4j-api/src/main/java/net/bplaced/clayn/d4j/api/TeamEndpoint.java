@@ -1,6 +1,10 @@
 package net.bplaced.clayn.d4j.api;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import kong.unirest.HttpResponse;
@@ -75,6 +80,37 @@ public class TeamEndpoint extends ServiceEndPoint
         }
     }
 
+    public ErrorMessage saveTeam(Team team) throws IOException
+    {
+        File data = new File("data");
+        File teamDir = new File(data, "teams");
+        if (!teamDir.exists())
+        {
+            if (!teamDir.mkdirs())
+            {
+                throw new IOException();
+            }
+        }
+        File teamFile = new File(teamDir, team.getName() + ".team");
+        if (teamFile.exists())
+        {
+            return new ErrorMessage("multiple");
+        }
+        Properties prop = new Properties();
+        prop.setProperty("team.name", team.getName());
+        prop.setProperty("team.desc", team.getDescription());
+        for (Map.Entry<Integer, Ninja> entry : team.getPositions().entrySet())
+        {
+            prop.setProperty("position." + entry.getKey(),
+                    entry.getValue() == null ? "-1" : entry.getValue().getId() + "");
+        }
+        try (OutputStream out = new FileOutputStream(teamFile))
+        {
+            prop.store(out, "");
+        }
+        return new ErrorMessage("0");
+    }
+
     public List<Team> getTeams(List<Ninja> ninjaList) throws IOException
     {
         Map<Integer, Ninja> tmpNinjas = new HashMap<>();
@@ -94,13 +130,66 @@ public class TeamEndpoint extends ServiceEndPoint
                     Collectors.toMap(Ninja::getId,
                             Function.identity())));
         }
+        List<Team> teams = new ArrayList<>();
+        File teamDir = new File("data/teams");
+        if (teamDir.exists())
+        {
+            File files[] = teamDir.listFiles(new FilenameFilter()
+            {
+                @Override
+                public boolean accept(File dir, String name)
+                {
+                    return name.endsWith(".team");
+                }
+            });
+            if (files != null)
+            {
+                for (File f : files)
+                {
+                    Properties prop = new Properties();
+                    if (!prop.containsKey("team.name"))
+                    {
+                        continue;
+                    }
+                    if (!prop.containsKey("team.desc"))
+                    {
+                        continue;
+                    }
+                    int count = 0;
+                    for (int i = 0; i < 9; ++i)
+                    {
+                        if (prop.containsKey("position." + i))
+                        {
+                            count++;
+                        }
+                    }
+                    if (count <= 0 || count > 4)
+                    {
+                        continue;
+                    }
+                    Team t = new Team();
+                    t.setName(prop.getProperty("team.name"));
+                    t.setDescription(prop.getProperty("team.desc"));
+                    for (int i = 0; i < 9; ++i)
+                    {
+                        if (prop.containsKey("position." + i))
+                        {
+                            t.getPositions().put(i, tmpNinjas.getOrDefault(
+                                    Integer.parseInt(prop.getProperty(
+                                            "position." + i)),
+                                    null));
+                        }
+                    }
+                    teams.add(t);
+                }
+            }
+        }
         HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list.php")
                 .asJson();
         JsonNode node = response.getBody();
         if (node != null && node.isArray())
         {
             JSONArray arr = node.getArray();
-            List<Team> teams = new ArrayList<>(arr.length());
             for (int i = 0; i < arr.length(); ++i)
             {
                 Team t = new Team();
