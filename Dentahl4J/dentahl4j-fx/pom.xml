@@ -173,7 +173,7 @@
         <dependency>
             <groupId>net.bplaced.clayn</groupId>
             <artifactId>d4j-api</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
