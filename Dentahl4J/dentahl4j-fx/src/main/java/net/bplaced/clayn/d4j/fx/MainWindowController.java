@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -15,8 +17,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
@@ -50,6 +56,8 @@ public class MainWindowController implements Initializable
     private ChoiceBox<FXTeam> teamList;
     @FXML
     private MenuItem clearMenu;
+    @FXML
+    private Menu languageMenu;
     private final TeamView team = new TeamView();
 
     @Override
@@ -58,6 +66,42 @@ public class MainWindowController implements Initializable
         clearMenu.disableProperty().bind(
                 teamList.getSelectionModel().selectedItemProperty().isNotNull());
         teamList.setItems(DomainData.getInstance().getTeams());
+        ToggleGroup langGroup = new ToggleGroup();
+        for (Locale l : I18n.SUPPORTED_LOCALE)
+        {
+            RadioMenuItem item = new RadioMenuItem();
+            item.textProperty().bind(I18n.getInstance().getStringBinding(
+                    "language." + l.getLanguage()));
+            langGroup.getToggles().add(item);
+            item.setToggleGroup(langGroup);
+            if (l.getLanguage().equals(
+                    I18n.getInstance().getLocale().getLanguage()))
+            {
+                langGroup.selectToggle(item);
+                item.setSelected(true);
+            }
+            item.setUserData(l);
+            languageMenu.getItems().add(item);
+        }
+        langGroup.selectedToggleProperty().addListener(
+                new ChangeListener<Toggle>()
+        {
+            @Override
+            public void changed(
+                    ObservableValue<? extends Toggle> observable,
+                    Toggle oldValue, Toggle newValue)
+            {
+                if (newValue != null)
+                {
+                    Object ud = newValue.getUserData();
+                    System.out.println("Selected user data: " + ud);
+                    if (ud instanceof Locale)
+                    {
+                        I18n.getInstance().setLocale((Locale) ud);
+                    }
+                }
+            }
+        });
         teamList.setConverter(new StringConverter<FXTeam>()
         {
             @Override
@@ -108,7 +152,9 @@ public class MainWindowController implements Initializable
             @Override
             public String toString(Element object)
             {
-                return object == null ? "Alle" : object.translate();
+                return object == null ? I18n.getInstance().getBundle().getString(
+                        "element.all") : object.translate(
+                                I18n.getInstance().getBundle());
             }
 
             @Override
@@ -116,13 +162,38 @@ public class MainWindowController implements Initializable
             {
                 for (Element el : Element.values())
                 {
-                    if (el.translate().equals(string))
+                    if (el.translate(I18n.getInstance().getBundle()).equals(
+                            string))
                     {
                         return el;
                     }
                 }
                 return null;
             }
+        });
+        I18n.getInstance().bundleProperty().addListener(
+                new ChangeListener<ResourceBundle>()
+        {
+            @Override
+            public void changed(
+                    ObservableValue<? extends ResourceBundle> observable,
+                    ResourceBundle oldValue, ResourceBundle newValue)
+            {
+                if (newValue != null)
+                {
+                    Element selected = elementFilter.getValue();
+                    elementFilter.getItems().clear();
+                    elementFilter.getItems().add(null);
+                    elementFilter.getItems().addAll(Element.values());
+                    if (selected != null)
+                    {
+                        Platform.runLater(
+                                () -> elementFilter.getSelectionModel().select(
+                                        selected));
+                    }
+                }
+            }
+
         });
         elementFilter.getItems().add(null);
         elementFilter.getItems().addAll(Element.values());

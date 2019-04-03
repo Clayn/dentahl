@@ -85,8 +85,10 @@ public class MainApp extends Application
     @Override
     public void start(Stage stage) throws Exception
     {
-        Parent root = FXMLLoader.load(getClass().getResource(
+        FXMLLoader windowLoader = new FXMLLoader(getClass().getResource(
                 "/fxml/MainWindow.fxml"));
+        windowLoader.setResources(I18n.getInstance().getBundle());
+        Parent root = windowLoader.load();
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");

@@ -21,7 +21,7 @@
                         <ChoiceBox fx:id="elementFilter" prefWidth="150.0" />
                     </children>
                 </HBox>
-                <ScrollPane fx:id="scroll" fitToWidth="true" styleClass="background">
+                <ScrollPane fx:id="scroll" fitToWidth="true" styleClass="background" VBox.vgrow="ALWAYS">
                     <content>
                         <FlowPane fx:id="ninjaPane" hgap="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="800.0" styleClass="background" vgap="10.0" />
                     </content>
@@ -43,6 +43,7 @@
                 <Menu mnemonicParsing="false" text="Bearbeiten">
                     <items>
                         <MenuItem fx:id="clearMenu" mnemonicParsing="false" onAction="#onClear" text="Leeren" />
+                        <Menu fx:id="languageMenu" mnemonicParsing="false" text="%menu.language" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Hilfe">
@@ -53,15 +54,15 @@
             </menus>
         </MenuBar>
     </top>
-   <right>
-      <VBox alignment="TOP_CENTER" spacing="10.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button mnemonicParsing="false" onAction="#onNewTeam" text="Neu" />
-            <ChoiceBox fx:id="teamList" prefWidth="250.0" />
-         </children>
-         <BorderPane.margin>
-            <Insets top="10.0" />
-         </BorderPane.margin>
-      </VBox>
-   </right>
+    <right>
+        <VBox alignment="TOP_CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button mnemonicParsing="false" onAction="#onNewTeam" text="Neu" />
+                <ChoiceBox fx:id="teamList" prefWidth="250.0" />
+            </children>
+            <BorderPane.margin>
+                <Insets top="10.0" />
+            </BorderPane.margin>
+        </VBox>
+    </right>
 </BorderPane>

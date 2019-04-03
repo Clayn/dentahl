@@ -29,6 +29,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.control.SkinBase;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
@@ -218,6 +219,11 @@ public class NinjaViewSkin extends SkinBase<NinjaView>
         pane.getStyleClass().add("ninjaview");
         pane.prefWidthProperty().bind(control.prefWidthProperty());
         pane.prefHeightProperty().bind(control.prefHeightProperty());
+        Tooltip tip = new Tooltip();
+        tip.textProperty().bind(Bindings.createStringBinding(
+                () -> control.getNinja() == null ? "Unkown" : control.getNinja().getName(),
+                control.ninjaProperty()));
+        Tooltip.install(pane, tip);
         getChildren().add(pane);
     }
 

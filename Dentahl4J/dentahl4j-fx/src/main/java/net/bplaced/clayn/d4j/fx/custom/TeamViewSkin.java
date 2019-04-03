@@ -34,6 +34,7 @@ import net.bplaced.clayn.d4j.data.DomainData;
 import net.bplaced.clayn.d4j.domain.ErrorMessage;
 import net.bplaced.clayn.d4j.domain.Ninja;
 import net.bplaced.clayn.d4j.domain.Team;
+import net.bplaced.clayn.d4j.fx.I18n;
 
 /**
  *
@@ -139,12 +140,14 @@ public class TeamViewSkin extends SkinBase<TeamView>
         });
         VBox details = new VBox(10);
         VBox nameBox = new VBox(5);
-        Label l = new Label("Teamname");
+        Label l = new Label();
+        l.textProperty().bind(I18n.getInstance().getStringBinding("label.team.name"));
         l.getStyleClass().add("item-title");
         addListener(control, nameField, Team::getName);
         nameBox.getChildren().addAll(l, nameField);
         VBox descriptionBox = new VBox(5);
-        l = new Label("Teambeschreibung");
+        l = new Label();
+        l.textProperty().bind(I18n.getInstance().getStringBinding("label.team.description"));
         l.getStyleClass().add("item-title");
         addListener(control, descriptionArea, Team::getDescription);
         descriptionBox.getChildren().addAll(l, descriptionArea);
@@ -152,7 +155,8 @@ public class TeamViewSkin extends SkinBase<TeamView>
         l = new Label("Token");
         l.getStyleClass().add("item-title");
         tokenBox.getChildren().addAll(l, tokenField);
-        Button upload = new Button("Speichern");
+        Button upload = new Button();
+        upload.textProperty().bind(I18n.getInstance().getStringBinding("button.save"));
         upload.setOnAction(this::uploadTeam);
         upload.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> nameField.getText() == null || nameField.getText().trim().isEmpty(),

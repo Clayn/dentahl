@@ -23,6 +23,8 @@
  */
 package net.bplaced.clayn.d4j.domain;
 
+import java.util.ResourceBundle;
+
 /**
  *
  * @author Clayn <clayn_osmato@gmx.de>
@@ -72,4 +74,13 @@ public enum Element
     };
 
     public abstract String translate();
+
+    public String translate(ResourceBundle bundle)
+    {
+        if (bundle.containsKey("element." + name().toLowerCase()))
+        {
+            return bundle.getString("element." + name().toLowerCase());
+        }
+        return translate();
+    }
 }
