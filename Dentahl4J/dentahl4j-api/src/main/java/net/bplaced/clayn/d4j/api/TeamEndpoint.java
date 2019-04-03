@@ -1,9 +1,11 @@
 package net.bplaced.clayn.d4j.api;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,6 +54,100 @@ public class TeamEndpoint extends ServiceEndPoint
     public List<Team> getTeams() throws IOException
     {
         return getTeams(null);
+    }
+
+    public List<Team> getTeams(List<Ninja> ninjaList) throws IOException
+    {
+        Map<Integer, Ninja> tmpNinjas = new HashMap<>();
+        if (ninjaList == null || ninjaList.isEmpty())
+        {
+            if (ninjas.isEmpty())
+            {
+                ninjas.putAll(
+                        new NinjaServiceEndpoint(hostBase).getNinjaList().stream().collect(
+                                Collectors.toMap(Ninja::getId,
+                                        Function.identity())));
+            }
+            tmpNinjas.putAll(ninjas);
+        } else
+        {
+            tmpNinjas.putAll(ninjaList.stream().collect(
+                    Collectors.toMap(Ninja::getId,
+                            Function.identity())));
+        }
+        List<Team> teams = new ArrayList<>();
+        loadLocalTeams(tmpNinjas, teams);
+        HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list.php")
+                .asJson();
+        JsonNode node = response.getBody();
+        if (node != null && node.isArray())
+        {
+            JSONArray arr = node.getArray();
+            for (int i = 0; i < arr.length(); ++i)
+            {
+                Team t = new Team();
+                JSONObject obj = arr.getJSONObject(i);
+                t.setName(obj.getString("name"));
+                t.setDescription(obj.getString("description"));
+                t.setId(obj.getInt("id"));
+                JSONArray pos = obj.getJSONArray("positions");
+                for (int j = 0; j < pos.length(); ++j)
+                {
+                    t.getPositions().put(j,
+                            tmpNinjas.getOrDefault(pos.getInt(j),
+                                    null));
+                }
+                teams.add(t);
+            }
+            return teams;
+        }
+        return Collections.emptyList();
+    }
+
+    private void loadLocalTeams(Map<Integer, Ninja> tmpNinjas, List<Team> teams) throws NumberFormatException, IOException
+    {
+        File teamDir = new File("data/teams");
+        if (teamDir.exists())
+        {
+            File files[] = teamDir.listFiles(new FilenameFilter()
+            {
+                @Override
+                public boolean accept(File dir, String name)
+                {
+                    return name.endsWith(".team");
+                }
+            });
+            if (files != null)
+            {
+                for (File f : files)
+                {
+
+                    Properties prop = new Properties();
+                    try (InputStream in = new FileInputStream(f))
+                    {
+                        prop.load(in);
+                    }
+                    if (validateProperty(prop))
+                    {
+                        continue;
+                    }
+                    Team t = new Team();
+                    t.setName(prop.getProperty("team.name"));
+                    t.setDescription(prop.getProperty("team.desc"));
+                    for (int i = 0; i < 9; ++i)
+                    {
+                        if (prop.containsKey("position." + i))
+                        {
+                            t.getPositions().put(i, tmpNinjas.getOrDefault(
+                                    Integer.parseInt(prop.getProperty(
+                                            "position." + i)),
+                                    null));
+                        }
+                    }
+                    teams.add(t);
+                }
+            }
+        }
     }
 
     public ErrorMessage uploadTeam(Team team, String token) throws IOException
@@ -111,103 +207,25 @@ public class TeamEndpoint extends ServiceEndPoint
         return new ErrorMessage("0");
     }
 
-    public List<Team> getTeams(List<Ninja> ninjaList) throws IOException
+    private boolean validateProperty(Properties prop)
     {
-        Map<Integer, Ninja> tmpNinjas = new HashMap<>();
-        if (ninjaList == null || ninjaList.isEmpty())
+        if (!prop.containsKey("team.name"))
         {
-            if (ninjas.isEmpty())
-            {
-                ninjas.putAll(
-                        new NinjaServiceEndpoint(hostBase).getNinjaList().stream().collect(
-                                Collectors.toMap(Ninja::getId,
-                                        Function.identity())));
-            }
-            tmpNinjas.putAll(ninjas);
-        } else
-        {
-            tmpNinjas.putAll(ninjaList.stream().collect(
-                    Collectors.toMap(Ninja::getId,
-                            Function.identity())));
+            return false;
         }
-        List<Team> teams = new ArrayList<>();
-        File teamDir = new File("data/teams");
-        if (teamDir.exists())
+        if (!prop.containsKey("team.desc"))
         {
-            File files[] = teamDir.listFiles(new FilenameFilter()
+            return false;
+        }
+        int count = 0;
+        for (int i = 0; i < 9; ++i)
+        {
+            if (prop.containsKey("position." + i))
             {
-                @Override
-                public boolean accept(File dir, String name)
-                {
-                    return name.endsWith(".team");
-                }
-            });
-            if (files != null)
-            {
-                for (File f : files)
-                {
-                    Properties prop = new Properties();
-                    if (!prop.containsKey("team.name"))
-                    {
-                        continue;
-                    }
-                    if (!prop.containsKey("team.desc"))
-                    {
-                        continue;
-                    }
-                    int count = 0;
-                    for (int i = 0; i < 9; ++i)
-                    {
-                        if (prop.containsKey("position." + i))
-                        {
-                            count++;
-                        }
-                    }
-                    if (count <= 0 || count > 4)
-                    {
-                        continue;
-                    }
-                    Team t = new Team();
-                    t.setName(prop.getProperty("team.name"));
-                    t.setDescription(prop.getProperty("team.desc"));
-                    for (int i = 0; i < 9; ++i)
-                    {
-                        if (prop.containsKey("position." + i))
-                        {
-                            t.getPositions().put(i, tmpNinjas.getOrDefault(
-                                    Integer.parseInt(prop.getProperty(
-                                            "position." + i)),
-                                    null));
-                        }
-                    }
-                    teams.add(t);
-                }
+                count++;
             }
         }
-        HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list.php")
-                .asJson();
-        JsonNode node = response.getBody();
-        if (node != null && node.isArray())
-        {
-            JSONArray arr = node.getArray();
-            for (int i = 0; i < arr.length(); ++i)
-            {
-                Team t = new Team();
-                JSONObject obj = arr.getJSONObject(i);
-                t.setName(obj.getString("name"));
-                t.setDescription(obj.getString("description"));
-                t.setId(obj.getInt("id"));
-                JSONArray pos = obj.getJSONArray("positions");
-                for (int j = 0; j < pos.length(); ++j)
-                {
-                    t.getPositions().put(j,
-                            tmpNinjas.getOrDefault(pos.getInt(j),
-                                    null));
-                }
-                teams.add(t);
-            }
-            return teams;
-        }
-        return Collections.emptyList();
+        return !(count <= 0 || count > 4);
     }
+
 }

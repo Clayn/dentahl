@@ -81,6 +81,11 @@ public class DentahlConfiguration
         properties.setProperty(key, val);
     }
 
+    public <T> void set(Configuration<T> key, T val)
+    {
+        set(key.getKey(), key.toString(val));
+    }
+
     public String get(String key, String def)
     {
         return properties.getProperty(key, def);
@@ -89,11 +94,6 @@ public class DentahlConfiguration
     public String get(String key)
     {
         return properties.getProperty(key, null);
-    }
-
-    public <T> void set(Configuration<T> key, T val)
-    {
-        set(key.getKey(), key.toString(val));
     }
 
     public <T> T get(Configuration<T> key, T def)
