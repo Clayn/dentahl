@@ -14,7 +14,10 @@ At the moment the client application will be released in two versions.
 
 The current release version is: 0.1.0
 
-
+## Contribute
+Feel free to propose features you think are usefull and improve the Dentahl experience by creating new issues.
+Also you may implement clients or libraries in other languages. 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEwMzkyNzkwLDgwMTE3MzE1MV19
+eyJoaXN0b3J5IjpbLTEyMTI3NzA1MjgsLTEwMzkyNzkwLDgwMT
+E3MzE1MV19
 -->
