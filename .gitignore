@@ -14,3 +14,6 @@ buildNumber.properties
 /Web/dentahl/nbproject/private/
 *.html
 /Dentahl4J/Dentahl4J-FX/data/
+/Dentahl4J/dentahl4j-fx/dentahl.properties
+/Dentahl4J/dentahl4j-fx/data/
+/Dentahl4J/dentahl4j-fx/dist/
