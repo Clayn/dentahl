@@ -38,7 +38,6 @@ node {
         }
         stage('Results') {
             junit allowEmptyResults: true, testResults: '**/TEST-*.xml'
-            //
         }
    }
 }
