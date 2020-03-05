@@ -37,7 +37,7 @@ import net.bplaced.clayn.d4j.domain.Ninja;
  */
 public class DBHelper {
 
-    private static final String NINJA_SQL = "INSERT INTO `Ninja` (`id`, `name`, `image`, `element`) VALUES (NULL, '%s', %s, '%d');";
+    private static final String NINJA_SQL = "INSERT INTO `Ninja` (`id`, `name`, `image`, `element`) VALUES (%d, '%s', %s, '%d');";
 
     private static final String ELEMENT_SQL = "INSERT INTO `Element` (`id`, `name`, `image`) VALUES (%d, '%s', '%s');";
 
@@ -46,24 +46,29 @@ public class DBHelper {
     static {
         String tmp = "<span class=\"attr\"><img src=\"/assets/images/icons/elements/de/feng_icon.png\" width=\"23\" height=\"24\"></span>";
         ICON_URLS.put(
-                Element.FIRE,"/assets/images/icons/elements/de/huo_icon.png");
+                Element.FIRE,"https://en.konohaproxy.com.br/include/images/sim/huo_icon.png");
         ICON_URLS.put(
-                Element.WIND,"/assets/images/icons/elements/de/feng_icon.png");
+                Element.WIND,"https://en.konohaproxy.com.br/include/images/sim/feng_icon.png");
         ICON_URLS.put(
-                Element.LIGHNING,"/assets/images/icons/elements/de/lei_icon.png");
+                Element.LIGHNING,"https://en.konohaproxy.com.br/include/images/sim/lei_icon.png");
         ICON_URLS.put(
-                Element.EARTH,"/assets/images/icons/elements/de/tu_icon.png");
+                Element.EARTH,"https://en.konohaproxy.com.br/include/images/sim/tu_icon.png");
         ICON_URLS.put(
-                Element.WATER,"/assets/images/icons/elements/de/shui_icon.png");
+                Element.WATER,"https://en.konohaproxy.com.br/include/images/sim/shui_icon.png");
+    }
+    
+    private static String prepareString(String str) {
+        return str.replace("'", "''");
     }
     public static String toInsertStatement(Ninja n, File output) throws Exception {
         if (!output.exists()) {
             output.createNewFile();
         }
         try (BufferedWriter writer = Files.newBufferedWriter(output.toPath())) {
-            String statement = String.format(NINJA_SQL, n.getName(),
-                    n.getImage() == null ? "NULL" : "'"+n.getImage()+"'",
-                    n.getElement().ordinal());
+            String statement = String.format(NINJA_SQL,n.getId(), prepareString(n.getName()),
+                    n.getImage() == null ? "NULL" : "'"+prepareString(
+                    n.getImage().toString())+"'",
+                    n.getElement());
             writer.write(statement);
             writer.flush();
             return statement;
@@ -78,8 +83,8 @@ public class DBHelper {
         String name=tmp.substring(0, 1)+tmp.substring(1).toLowerCase();
         
         try (BufferedWriter writer = Files.newBufferedWriter(output.toPath())) {
-            String statement = String.format(ELEMENT_SQL, el.ordinal(),name,
-                    ICON_URLS.get(el));
+            String statement = String.format(ELEMENT_SQL, el.ordinal(),prepareString(name),
+                    prepareString(ICON_URLS.get(el)));
             writer.write(statement);
             writer.flush();
             return statement;
