@@ -1,0 +1,1 @@
+INSERT INTO `Element` (`id`, `name`, `image`) VALUES (3, 'Earth', 'https://en.konohaproxy.com.br/include/images/sim/tu_icon.png');

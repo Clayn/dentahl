@@ -55,7 +55,8 @@ public class NinjaServiceEndpoint extends ServiceEndPoint
 
     public List<Ninja> getNinjaList() throws IOException
     {
-        HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list.php")
+        System.out.println("Loading: "+getSafeURL() + "list");
+        HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list")
                 .asJson();
         JsonNode node = response.getBody();
         String json = node.toString();

@@ -31,12 +31,12 @@ public class MainApp extends Application
     @Override
     public void init() throws Exception
     {
-        disableSSLCertificateCheck();
+        //disableSSLCertificateCheck();
         DentahlConfiguration.getConfiguration().load();
         if (!DentahlConfiguration.getConfiguration().isSet(Keys.REST_BASE))
         {
             DentahlConfiguration.getConfiguration().set(Keys.REST_BASE, new URL(
-                    "http://clayn.bplaced.net/dentahl"));
+                    "http://localhost:8080/dentahl/v2/"));
             DentahlConfiguration.getConfiguration().store();
         }
     }

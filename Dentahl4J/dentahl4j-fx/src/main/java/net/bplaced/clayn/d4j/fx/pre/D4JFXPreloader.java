@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -195,6 +196,13 @@ public class D4JFXPreloader implements Initializable
         }
         return "";
     }
+    
+    private InputStream read(URL url) throws IOException {
+    HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
+    httpcon.addRequestProperty("User-Agent", "Mozilla/4.0");
+
+  return httpcon.getInputStream();
+}
 
     private void initTasks()
     {
@@ -269,6 +277,7 @@ public class D4JFXPreloader implements Initializable
             {
                 try
                 {
+                    int tries = 10;
                     setText("Lade Ninjabilder");
                     setProgress(-1);
                     double count = ninjas.size();
@@ -282,6 +291,7 @@ public class D4JFXPreloader implements Initializable
                     long delta = -1;
                     for (Ninja n : ninjas)
                     {
+
                         if (rest < 0)
                         {
                             setText(String.format("Lade Bild %d / %d", i++,
@@ -301,27 +311,43 @@ public class D4JFXPreloader implements Initializable
                             {
 
                                 imgFile.createNewFile();
-                                try (InputStream in = u.openStream(); OutputStream out = Files.newOutputStream(
-                                        imgFile.toPath()))
+                                int tried = 0;
+                                do
                                 {
-                                    byte[] buffer = new byte[256];
-                                    int read = 0;
-                                    while ((read = in.read(buffer)) >= 0)
+                                    try (InputStream in = read(u); OutputStream out = Files.newOutputStream(
+                                            imgFile.toPath()))
                                     {
-                                        out.write(buffer, 0, read);
+                                        byte[] buffer = new byte[256];
+                                        int read = 0;
+                                        while ((read = in.read(buffer)) >= 0)
+                                        {
+                                            out.write(buffer, 0, read);
+                                        }
+                                        out.flush();
+                                        break;
+                                    } catch (Exception e)
+                                    {
+                                        System.err.println(
+                                                "Catched an exception, try again. " + tried + " / " + tries);
+                                        tried++;
                                     }
-                                    out.flush();
+                                } while (tried < tries);
+                                if (tried >= tries && imgFile.exists())
+                                {
+                                    imgFile.delete();
                                 }
-
                             }
                         }
-                        try (InputStream in = Files.newInputStream(
-                                imgFile.toPath()))
+                        if (imgFile.exists())
                         {
-                            Image img = new Image(in);
-                            DomainData.getInstance().getNinjaImages().put(
-                                    n,
-                                    img);
+                            try (InputStream in = Files.newInputStream(
+                                    imgFile.toPath()))
+                            {
+                                Image img = new Image(in);
+                                DomainData.getInstance().getNinjaImages().put(
+                                        n,
+                                        img);
+                            }
                         }
                         long time2 = System.nanoTime();
                         if (delta < 0)

@@ -22,5 +22,26 @@
             <artifactId>d4j-domain</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
+         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>d4j-domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+    <groupId>io.webfolder</groupId>
+    <artifactId>ui4j-webkit</artifactId>
+    <version>4.0.0</version>
+</dependency>
+<dependency>
+    <groupId>org.testfx</groupId>
+    <artifactId>openjfx-monocle</artifactId>
+    <version>1.8.0_20</version>
+</dependency>
+
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>3.141.59</version>
+</dependency>
     </dependencies>
 </project>
