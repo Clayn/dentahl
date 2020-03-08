@@ -1,0 +1,12 @@
+.ninjaview {
+    -fx-border-width:0.5; 
+    -fx-border-color: white;
+}
+
+.ninjaview:hover {
+    -fx-background-color: lightgrey;
+}
+
+.team-drag-over {
+    -fx-background-color: greenyellow;
+}

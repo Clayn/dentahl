@@ -10,11 +10,7 @@ buildNumber.properties
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
-/Web/API/nbproject/private/
-/Web/dentahl/nbproject/private/
 *.html
 /Dentahl4J/Dentahl4J-FX/data/
-/Dentahl4J/dentahl4j-fx/dentahl.properties
-/Dentahl4J/dentahl4j-fx/data/
-/Dentahl4J/dentahl4j-fx/dist/
-Web/dentahl-web/nbproject/private/
+/Dentahl4J/Dentahl4J-FX/dentahl.properties
+/Dentahl4J/Dentahl4J-FX/dist/
