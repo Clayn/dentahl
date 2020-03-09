@@ -9,6 +9,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import de.clayntech.config4j.Config4J;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -29,7 +31,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import kong.unirest.Unirest;
 import de.clayntech.dentahl4j.api.TeamEndpoint;
-import de.clayntech.dentahl4j.config.DentahlConfiguration;
 import de.clayntech.dentahl4j.config.Keys;
 import de.clayntech.dentahl4j.data.DomainData;
 import de.clayntech.dentahl4j.domain.Element;
@@ -241,7 +242,7 @@ public class MainWindowController implements Initializable
         try
         {
             List<Team> teams = new TeamEndpoint(
-                    DentahlConfiguration.getConfiguration().get(
+                    Config4J.getConfiguration().get(
                             Keys.REST_BASE)).getTeams(
                     DomainData.getInstance().getNinjas());
             DomainData.getInstance().getTeams().addAll(teams.stream().map(

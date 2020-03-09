@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-API/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-API/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-Domain/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-Domain/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-FX/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-FX/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-Server/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-Tools/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-Tools/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Dentahl4J/dentahl4j-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Dentahl4J/dentahl4j-domain/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Dentahl4J/dentahl4j-tools/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Dentahl4J/dentahl4j-tools/src/main/resources" charset="UTF-8" />
   </component>
 </project>

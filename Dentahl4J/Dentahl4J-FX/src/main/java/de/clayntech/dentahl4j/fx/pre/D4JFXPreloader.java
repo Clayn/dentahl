@@ -36,6 +36,8 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+
+import de.clayntech.config4j.Config4J;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -50,7 +52,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro8.JMetro;
 import de.clayntech.dentahl4j.api.NinjaServiceEndpoint;
-import de.clayntech.dentahl4j.config.DentahlConfiguration;
 import de.clayntech.dentahl4j.config.Keys;
 import de.clayntech.dentahl4j.data.DomainData;
 import de.clayntech.dentahl4j.domain.Ninja;
@@ -216,7 +217,7 @@ public class D4JFXPreloader implements Initializable
                     setText("Lade Ninjas");
                     setProgress(-1);
                     ninjas.addAll(new NinjaServiceEndpoint(
-                            DentahlConfiguration.getConfiguration().get(
+                            Config4J.getConfiguration().get(
                                     Keys.REST_BASE)).getNinjaList());
                     File dir = new File("data", "ninjas");
                     dir.mkdirs();

@@ -1,9 +1,14 @@
 package de.clayntech.dentahl4j.fx;
 
+import java.io.File;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+
+import de.clayntech.config4j.Config4J;
+import de.clayntech.config4j.Configuration;
+import de.clayntech.config4j.ConfigurationProvider;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.value.ChangeListener;
@@ -21,7 +26,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import jfxtras.styles.jmetro8.JMetro;
 import kong.unirest.Unirest;
-import de.clayntech.dentahl4j.config.DentahlConfiguration;
 import de.clayntech.dentahl4j.config.Keys;
 import de.clayntech.dentahl4j.fx.pre.D4JFXPreloader;
 
@@ -31,13 +35,14 @@ public class MainApp extends Application
     @Override
     public void init() throws Exception
     {
+        Config4J.setProvider(ConfigurationProvider.newFileBasedProvider(new File("dentahl.properties")));
         //disableSSLCertificateCheck();
-        DentahlConfiguration.getConfiguration().load();
-        if (!DentahlConfiguration.getConfiguration().isSet(Keys.REST_BASE))
+        Configuration config=Config4J.getConfiguration();
+        if (!config.getConfigurations().contains(Keys.REST_BASE.getKey()))
         {
-            DentahlConfiguration.getConfiguration().set(Keys.REST_BASE, new URL(
+            config.set(Keys.REST_BASE, new URL(
                     "http://localhost:8080/dentahl/v2/"));
-            DentahlConfiguration.getConfiguration().store();
+            Config4J.saveConfiguration();
         }
     }
 

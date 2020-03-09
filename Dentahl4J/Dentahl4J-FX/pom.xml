@@ -54,7 +54,6 @@
                     <vendor>clayn_osmato@gmx.de</vendor>
                     <mainClass>${mainClass}</mainClass>
                     <appName>Dentahl4J</appName>
-
                     <nativeOutputDir>dist</nativeOutputDir>
                     <nativeReleaseVersion>${project.version}</nativeReleaseVersion>
                 </configuration>
@@ -172,6 +171,11 @@
             <groupId>de.clayntech</groupId>
             <artifactId>dentahl4j-api</artifactId>
             <version>0.2.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.clayntech</groupId>
+            <artifactId>config4j</artifactId>
+            <version>0.1.6</version>
         </dependency>
     </dependencies>
 </project>

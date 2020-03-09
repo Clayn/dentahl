@@ -1,5 +1,9 @@
 package de.clayntech.dentahl4j.config;
 
+import de.clayntech.config4j.Key;
+import de.clayntech.config4j.impl.key.KeyFactory;
+
+import javax.swing.*;
 import java.net.URL;
 
 /**
@@ -10,6 +14,5 @@ import java.net.URL;
 public interface Keys
 {
 
-    public static final Configuration<URL> REST_BASE = new URLConfiguration(
-            "dentahl.rest.base");
+    Key<URL> REST_BASE = KeyFactory.createKey("dentahl.rest.base",URL.class);
 }

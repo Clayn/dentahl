@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import de.clayntech.config4j.Config4J;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -28,7 +30,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import de.clayntech.dentahl4j.api.TeamEndpoint;
-import de.clayntech.dentahl4j.config.DentahlConfiguration;
 import de.clayntech.dentahl4j.config.Keys;
 import de.clayntech.dentahl4j.data.DomainData;
 import de.clayntech.dentahl4j.domain.ErrorMessage;
@@ -173,7 +174,7 @@ public class TeamViewSkin extends SkinBase<TeamView>
     private void uploadTeam(ActionEvent evt)
     {
         TeamEndpoint end = new TeamEndpoint(
-                DentahlConfiguration.getConfiguration().get(Keys.REST_BASE));
+               Config4J.getConfiguration().get(Keys.REST_BASE));
         FXTeam t = new FXTeam();
         t.setName(nameField.getText());
         t.setDescription(descriptionArea.getText());
