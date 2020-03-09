@@ -1,1 +1,0 @@
-INSERT INTO `Element` (`id`, `name`, `image`) VALUES (2, 'Lightning', 'https://en.konohaproxy.com.br/include/images/sim/lei_icon.png');

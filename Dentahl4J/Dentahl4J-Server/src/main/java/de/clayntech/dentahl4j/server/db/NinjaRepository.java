@@ -23,10 +23,21 @@
  */
 package de.clayntech.dentahl4j.server.db;
 
+import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import de.clayntech.dentahl4j.domain.Ninja;
+import de.clayntech.dentahl4j.server.data.Grabber;
 import de.clayntech.dentahl4j.server.db.util.DentahlMapper;
 import de.clayntech.dentahl4j.server.db.util.NinjaMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -34,9 +45,17 @@ import org.springframework.stereotype.Repository;
  * @author Clayn <clayn_osmato@gmx.de>
  */
 @Repository
+@Configuration
+@EnableScheduling
 public class NinjaRepository extends DentahlRepository<Ninja>
 {
 
+    private static final String INSERT="INSERT INTO `Ninja` (`id`, `name`, `image`, `element`) VALUES (?, ?, ?, ?)";
+    @Autowired
+    private Grabber grabber;
+    {
+        LOG.info("Creating the ninja repository");
+    }
     @Override
     protected DentahlMapper<Ninja> getMapper()
     {
@@ -54,5 +73,29 @@ public class NinjaRepository extends DentahlRepository<Ninja>
         return ninjas.isEmpty()?null:ninjas.get(0);
     }
     
-    
+    @Scheduled(initialDelay = 5000,fixedDelay = 10000)
+    protected void refreshNinjas() throws IOException, InterruptedException {
+        LOG.info("Refreshing the Ninja List");
+        List<Ninja> loaded=grabber.grabNinjas();
+        List<Ninja> existing=findAll();
+        List<Ninja> missing=loaded.stream()
+                .filter((n)->!existing.contains(n))
+                .collect(Collectors.toList());
+        if(!missing.isEmpty()) {
+            for(Ninja n:missing) {
+                getDBAccess().update(INSERT, new PreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement preparedStatement) throws SQLException {
+                        preparedStatement.setInt(1,n.getId());
+                        preparedStatement.setString(2,n.getName());
+                        preparedStatement.setString(3,n.getImage().toString());
+                        preparedStatement.setInt(4,n.getElement());
+                    }
+                });
+            }
+        }
+        else {
+            LOG.info("No new ninjas found");
+        }
+    }
 }

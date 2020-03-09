@@ -38,9 +38,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/dentahl/v2/ninja")
-public class NinjaService
+public class NinjaService extends GeneralService
 {
-    
+    {
+        LOG.info("Creating the ninja service");
+    }
+
     @Autowired
     private NinjaRepository repository;
     

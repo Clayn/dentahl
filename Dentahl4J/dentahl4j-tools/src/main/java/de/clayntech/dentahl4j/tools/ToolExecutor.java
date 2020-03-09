@@ -33,7 +33,9 @@ import java.util.List;
 import de.clayntech.dentahl4j.domain.Element;
 import de.clayntech.dentahl4j.domain.Ninja;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 /**
  *
@@ -46,15 +48,20 @@ public class ToolExecutor {
      */
     public static void main(String[] args) throws Exception {
        boolean urlOnly=true;
+       String app="/Applications/Firefox.app";
+        FirefoxBinary bin=new FirefoxBinary();
        String chDriver="/Users/lpazderski/Tmp/dentahl/geckodriver";
        System.setProperty("webdriver.gecko.driver", chDriver);
        String url="https://en.konohaproxy.com.br/";
-            
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        firefoxOptions.setBinary(bin);
+        firefoxOptions.setHeadless(true);
         File f = new File("src/main/resources");
         f.mkdirs();
         File dest=new File(f, "ninjas.html");
         if(!dest.exists()) {
-        WebDriver driver = new FirefoxDriver();
+        FirefoxDriver driver = new FirefoxDriver(firefoxOptions);
+
             driver.get(url);
             BufferedReader reader=new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Waiting for input");
@@ -73,10 +80,11 @@ public class ToolExecutor {
                 writer.write(str);
                 writer.flush();
             }
-            boolean test=true;
-            if(test) {
-                return;
-            }
+        }
+        boolean test=true;
+        if(test) {
+            System.out.println("Saved content to: "+dest.getAbsolutePath());
+            return;
         }
         List<Ninja> nins = DataExtractor.extractNinjas(null);
         System.out.println("");

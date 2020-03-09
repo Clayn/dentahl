@@ -1,18 +1,19 @@
 package de.clayntech.dentahl4j.fx;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
+import de.clayntech.config4j.Config4J;
+import de.clayntech.dentahl4j.config.Keys;
+import de.clayntech.dentahl4j.tooling.Reflections;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  *
@@ -21,7 +22,7 @@ import javafx.beans.value.ObservableValue;
  */
 public class I18n
 {
-
+    private static final Logger LOG= LoggerFactory.getLogger(I18n.class);
     public static final Set<Locale> SUPPORTED_LOCALE = new HashSet<>(
             Arrays.asList(Locale.GERMAN, Locale.ENGLISH));
     private static final I18n INSTANCE = new I18n();
@@ -66,21 +67,21 @@ public class I18n
                 {
                     try
                     {
-                        System.out.println(
-                                "Loading resourcebundle for locale: " + newValue);
                         bundle.set(ResourceBundle.getBundle("i18n.language",
                                 newValue));
+                        if(oldValue==null||!newValue.equals(Config4J.getConfiguration().get(Keys.LANGUAGE))) {
+                            Config4J.getConfiguration().set(Keys.LANGUAGE,newValue);
+                            Config4J.saveConfiguration();
+                        }
                     } catch (Exception e)
                     {
-                        System.out.println(
-                                "No resourcebundle found for locale: " + newValue);
                         bundle.set(ResourceBundle.getBundle("i18n.language",
                                 Locale.ROOT));
                     }
                 }
             }
         });
-        locale.setValue(Locale.getDefault());
+        locale.setValue(Config4J.getConfiguration().get(Keys.LANGUAGE,Locale.ROOT));
     }
 
     public static I18n getInstance()
@@ -100,6 +101,21 @@ public class I18n
     {
         return Bindings.createStringBinding(() -> getBundle().getString(key),
                 bundle);
+    }
+
+    public void bindTextProperty(Object object,String key) {
+        Method propGetter= Reflections.findMethod(object.getClass(),"textProperty", StringProperty.class);
+        if(propGetter!=null) {
+            try {
+                StringProperty prop= (StringProperty) propGetter.invoke(object);
+                prop.bind(getStringBinding(key));
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                LOG.error("Failed to fetch the string property",e);
+            }
+        }
+        else {
+            LOG.debug("No textProperty found for: {}",object);
+        }
     }
 
 }

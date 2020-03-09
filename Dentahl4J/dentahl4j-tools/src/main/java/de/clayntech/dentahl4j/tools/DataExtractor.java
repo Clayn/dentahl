@@ -55,6 +55,7 @@ public class DataExtractor {
     public static List<Ninja> extractNinjas(File dir) throws IOException {
         List<Ninja> ninjas = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
+        System.out.println("Reading form: "+new File("src/main/resources","ninjas.html").getAbsolutePath());
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File("src/main/resources","ninjas.html"))))) {
             String line;
             while ((line = reader.readLine()) != null) {

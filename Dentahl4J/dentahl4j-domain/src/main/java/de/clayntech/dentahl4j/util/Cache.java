@@ -23,6 +23,9 @@
  */
 package de.clayntech.dentahl4j.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -35,11 +38,14 @@ import java.util.function.Supplier;
  */
 public class Cache
 {
-
+    private final Logger LOG= LoggerFactory.getLogger(Cache.class);
     private static final long DECAY = TimeUnit.SECONDS.toMillis(30);
     private final Map<CacheEntry, Object> cacheMap = new HashMap<>();
     private final Map<CacheEntry, Supplier<Object>> getterMap = new HashMap<>();
 
+    {
+        LOG.info("Creating a new cache");
+    }
     public void registerSupplier(String key, Supplier<Object> function)
     {
         getterMap.put(new CacheEntry(key, -1), function);
@@ -58,6 +64,7 @@ public class Cache
                     {
                         return null;
                     }
+                    LOG.info("Recalculating the value for {}",key);
                     Object val = getterMap.get(entry.getKey()).get();
                     CacheEntry newEntry = new CacheEntry(key,
                             System.currentTimeMillis());
@@ -65,6 +72,7 @@ public class Cache
                     return (T) val;
                 } else
                 {
+                    LOG.info("Retrieving cached value for {}",key);
                     return (T) entry.getValue();
                 }
             }
@@ -72,8 +80,10 @@ public class Cache
         CacheEntry keyEntry = new CacheEntry(key, DECAY);
         if (!getterMap.containsKey(keyEntry))
         {
+            LOG.info("No information of values found for {}",key);
             return null;
         }
+        LOG.info("Calculating the value for {}",key);
         Object val = getterMap.get(keyEntry).get();
         CacheEntry newEntry = new CacheEntry(key, System.currentTimeMillis());
         cacheMap.put(newEntry, val);

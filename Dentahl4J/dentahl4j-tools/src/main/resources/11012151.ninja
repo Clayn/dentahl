@@ -1,1 +1,0 @@
-INSERT INTO `Ninja` (`id`, `name`, `image`, `element`) VALUES (11012151, 'Naruto [Ronin]', 'https://en.konohaproxy.com.br/include/images/ninja/11012151.png', '1');

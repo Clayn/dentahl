@@ -1,34 +1,6 @@
 package de.clayntech.dentahl4j.fx.custom;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import de.clayntech.config4j.Config4J;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.SkinBase;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.VBox;
 import de.clayntech.dentahl4j.api.TeamEndpoint;
 import de.clayntech.dentahl4j.config.Keys;
 import de.clayntech.dentahl4j.data.DomainData;
@@ -36,6 +8,23 @@ import de.clayntech.dentahl4j.domain.ErrorMessage;
 import de.clayntech.dentahl4j.domain.Ninja;
 import de.clayntech.dentahl4j.domain.Team;
 import de.clayntech.dentahl4j.fx.I18n;
+import de.clayntech.dentahl4j.tooling.TaskManager;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  *
@@ -44,19 +33,20 @@ import de.clayntech.dentahl4j.fx.I18n;
  */
 public class TeamViewSkin extends SkinBase<TeamView>
 {
-
+    private static final org.slf4j.Logger LOG=LoggerFactory.getLogger(TeamViewSkin.class);
     private final List<NinjaView> views = new ArrayList<>();
     private final IntegerProperty ninjaCount = new SimpleIntegerProperty(0);
     private final TextField nameField = new TextField();
     private final TextArea descriptionArea = new TextArea();
     private final TextField tokenField = new TextField();
-    CheckBox local = new CheckBox("Lokal speichern");
+    CheckBox local = new CheckBox();
     private final TeamView teamView;
 
     TeamViewSkin(TeamView control)
     {
         super(control);
         teamView = control;
+        local.textProperty().bind(I18n.getInstance().getStringBinding("label.team.local"));
         HBox box = new HBox(10);
         control.setOnClear(new Runnable()
         {
@@ -64,6 +54,8 @@ public class TeamViewSkin extends SkinBase<TeamView>
             public void run()
             {
                 views.forEach((v) -> v.setNinja(null));
+                nameField.setText("");
+                descriptionArea.setText("");
             }
         });
         GridPane grid = new GridPane();
@@ -193,20 +185,20 @@ public class TeamViewSkin extends SkinBase<TeamView>
         }
         try
         {
-            ErrorMessage mes = local.isSelected() ? end.saveTeam(t) : end.uploadTeam(
-                    t, tokenField.getText());
+            ErrorMessage mes = local.isSelected() ? end.saveTeam(t.toDomainTeam()) : end.uploadTeam(
+                    t.toDomainTeam(), tokenField.getText());
+            LOG.info("Recieved message: {}",mes.getMessage());
             try
             {
-                Long.parseLong(mes.getMessage());
-                DomainData.getInstance().getTeams().add(t);
+                DomainData.getInstance().getTeams().clear();
+                TaskManager.getTaskManager().callTask(Keys.TASK_LOAD_TEAMS);
             } catch (NumberFormatException ex)
             {
-                System.out.println("Error uploading");
+                LOG.error("",ex);
             }
         } catch (IOException ex)
         {
-            Logger.getLogger(TeamViewSkin.class.getName()).log(Level.SEVERE,
-                    null, ex);
+            LOG.error("",ex);
         }
     }
 

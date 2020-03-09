@@ -23,6 +23,12 @@
  */
 package de.clayntech.dentahl4j.api;
 
+import com.google.gson.Gson;
+import kong.unirest.ObjectMapper;
+import kong.unirest.Unirest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URL;
 
 /**
@@ -31,9 +37,23 @@ import java.net.URL;
  */
 public abstract class ServiceEndPoint
 {
-
+    protected final Logger LOG= LoggerFactory.getLogger(getClass());
     protected final String baseUrl;
 
+    static {
+        Unirest.config().setObjectMapper(new ObjectMapper() {
+            Gson gson=new Gson();
+            @Override
+            public <T> T readValue(String value, Class<T> valueType) {
+                return gson.fromJson(value,valueType);
+            }
+
+            @Override
+            public String writeValue(Object value) {
+                return gson.toJson(value);
+            }
+        });
+    }
     protected String getSafeURL()
     {
         return baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";

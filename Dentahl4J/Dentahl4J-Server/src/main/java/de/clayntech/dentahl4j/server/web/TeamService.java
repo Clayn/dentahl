@@ -24,12 +24,12 @@
 package de.clayntech.dentahl4j.server.web;
 
 import java.util.List;
+
+import de.clayntech.dentahl4j.domain.ErrorMessage;
 import de.clayntech.dentahl4j.domain.Team;
 import de.clayntech.dentahl4j.server.db.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -37,13 +37,28 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/dentahl/v2/team")
-public class TeamService
+public class TeamService extends GeneralService
 {
+    {
+        LOG.info("Creating the team service");
+    }
     @Autowired
     private TeamRepository repository;
     
     @GetMapping("/list")
     public List<Team> getNinjas() {
         return repository.findAll();
+    }
+
+    @PostMapping("/upload")
+    public ErrorMessage uploadTeam(@RequestBody Team team) {
+        String message="";
+        try {
+            int id = repository.saveTeam(team);
+            message=""+id;
+        }catch (Exception ex) {
+            message=ex.getMessage();
+        }
+        return new ErrorMessage(message);
     }
 }

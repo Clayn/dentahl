@@ -23,21 +23,11 @@
  */
 package de.clayntech.dentahl4j.fx.pre;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
-
 import de.clayntech.config4j.Config4J;
+import de.clayntech.dentahl4j.api.NinjaServiceEndpoint;
+import de.clayntech.dentahl4j.config.Keys;
+import de.clayntech.dentahl4j.data.DomainData;
+import de.clayntech.dentahl4j.domain.Ninja;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -50,11 +40,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import jfxtras.styles.jmetro8.JMetro;
-import de.clayntech.dentahl4j.api.NinjaServiceEndpoint;
-import de.clayntech.dentahl4j.config.Keys;
-import de.clayntech.dentahl4j.data.DomainData;
-import de.clayntech.dentahl4j.domain.Ninja;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -62,7 +61,7 @@ import de.clayntech.dentahl4j.domain.Ninja;
  */
 public class D4JFXPreloader implements Initializable
 {
-
+    private static final Logger LOG= LoggerFactory.getLogger(D4JFXPreloader.class);
     private final ReadOnlyBooleanWrapper finished = new ReadOnlyBooleanWrapper(
             false);
 
@@ -76,6 +75,7 @@ public class D4JFXPreloader implements Initializable
 
         public void setText(String text)
         {
+            LOG.debug("Setting labelTask text to: '{}'",text);
             Platform.runLater(() -> labelTask.setText(text));
         }
 
@@ -108,8 +108,7 @@ public class D4JFXPreloader implements Initializable
         Parent root = loader.load();
         D4JFXPreloader cont = loader.getController();
         Scene scene = new Scene(root);
-        metro.applyTheme(scene);
-        metro.applyTheme(root);
+        JMetro met=new JMetro(scene, Style.DARK);
         st.setScene(scene);
         st.show();
         cont.start(finished);
@@ -175,6 +174,7 @@ public class D4JFXPreloader implements Initializable
         progressTask.setProgress(-1);
         Objects.requireNonNull(labelAll);
         Objects.requireNonNull(labelTask);
+        LOG.debug("Init tasks");
         initTasks();
     }
 
@@ -219,7 +219,9 @@ public class D4JFXPreloader implements Initializable
                     ninjas.addAll(new NinjaServiceEndpoint(
                             Config4J.getConfiguration().get(
                                     Keys.REST_BASE)).getNinjaList());
-                    File dir = new File("data", "ninjas");
+                    File base=new File(System.getProperty("user.dir"),"data");
+                    File dir = new File(base, "ninjas");
+                    LOG.debug("Saving data to: {}",dir.getAbsolutePath());
                     dir.mkdirs();
                     double count = ninjas.size();
                     double done = 0;
@@ -264,7 +266,6 @@ public class D4JFXPreloader implements Initializable
                             Comparator.comparingInt(Ninja::getMain).reversed().thenComparingInt(
                                     Ninja::getId));*/
                     DomainData.getInstance().getNinjas().addAll(ninjas);
-                    System.out.println("All added");
                 } catch (Exception ex)
                 {
                     throw new RuntimeException(ex);
@@ -285,7 +286,9 @@ public class D4JFXPreloader implements Initializable
                     double done = 0;
                     setProgress(0);
                     int i = 1;
-                    File dir = new File("data", "images");
+                    File base=new File(System.getProperty("user.dir"),"data");
+                    File dir = new File(base,  "images");
+                    LOG.debug("Saving data to: {}",dir.getAbsolutePath());
                     dir.mkdirs();
                     int remain = ninjas.size();
                     long rest = -1;
@@ -328,8 +331,6 @@ public class D4JFXPreloader implements Initializable
                                         break;
                                     } catch (Exception e)
                                     {
-                                        System.err.println(
-                                                "Catched an exception, try again. " + tried + " / " + tries);
                                         tried++;
                                     }
                                 } while (tried < tries);

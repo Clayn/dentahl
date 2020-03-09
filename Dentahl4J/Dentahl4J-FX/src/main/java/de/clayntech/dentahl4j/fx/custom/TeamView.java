@@ -1,10 +1,11 @@
 package de.clayntech.dentahl4j.fx.custom;
 
-import java.util.Optional;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
+
+import java.util.Optional;
 
 /**
  *

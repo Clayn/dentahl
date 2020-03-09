@@ -23,15 +23,10 @@
  */
 package de.clayntech.dentahl4j.fx.custom;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import de.clayntech.dentahl4j.domain.Ninja;
+import javafx.beans.property.*;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
-import de.clayntech.dentahl4j.domain.Ninja;
 
 /**
  *

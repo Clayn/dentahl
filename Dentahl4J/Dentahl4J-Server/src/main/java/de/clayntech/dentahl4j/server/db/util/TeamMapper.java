@@ -39,6 +39,11 @@ public class TeamMapper extends DentahlMapper<Team>
     @Override
     protected Team map(ResultSet res, int index) throws SQLException
     {
+        if(res.isBeforeFirst()) {
+            if(!res.next()) {
+                return null;
+            }
+        }
         Team t=new Team();
         t.setName(res.getString("name"));
         t.setDescription(res.getString("description"));

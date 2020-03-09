@@ -1,13 +1,14 @@
 package de.clayntech.dentahl4j.fx.custom;
 
-import java.util.Objects;
+import de.clayntech.dentahl4j.domain.Ninja;
+import de.clayntech.dentahl4j.domain.Team;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import de.clayntech.dentahl4j.domain.Ninja;
-import de.clayntech.dentahl4j.domain.Team;
+
+import java.util.Objects;
 
 /**
  *
@@ -55,4 +56,12 @@ public class FXTeam extends Team
         return team;
     }
 
+    public Team toDomainTeam() {
+        Team t=new Team();
+        t.setName(getName());
+        t.setDescription(getDescription());
+        t.setId(getId());
+        t.getPositions().putAll(getPositions());
+        return t;
+    }
 }

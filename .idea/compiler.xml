@@ -17,8 +17,8 @@
       <module name="Dentahl4J" target="1.5" />
       <module name="Dentahl4J-API" target="1.8" />
       <module name="Dentahl4J-Domain" target="1.8" />
-      <module name="Dentahl4J-FX" target="1.8" />
-      <module name="Dentahl4J-Server" target="1.8" />
+      <module name="Dentahl4J-FX" target="13" />
+      <module name="Dentahl4J-Server" target="11" />
       <module name="Dentahl4J-Tools" target="1.8" />
     </bytecodeTargetLevel>
   </component>

@@ -55,11 +55,12 @@ public class NinjaServiceEndpoint extends ServiceEndPoint
 
     public List<Ninja> getNinjaList() throws IOException
     {
-        System.out.println("Loading: "+getSafeURL() + "list");
+        LOG.debug("Requesting the ninja list using: {}/list",getSafeURL());
         HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list")
                 .asJson();
         JsonNode node = response.getBody();
         String json = node.toString();
+        LOG.debug("Response: {}",json);
         final Type type = new TypeToken<List<Ninja>>()
         {
         }.getType();

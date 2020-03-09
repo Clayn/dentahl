@@ -23,7 +23,8 @@
  */
 package de.clayntech.dentahl4j.fx.custom;
 
-import java.util.concurrent.Callable;
+import de.clayntech.dentahl4j.data.DomainData;
+import de.clayntech.dentahl4j.domain.Ninja;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -32,15 +33,10 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.StackPane;
-import de.clayntech.dentahl4j.data.DomainData;
-import de.clayntech.dentahl4j.domain.Ninja;
+
+import java.util.concurrent.Callable;
 
 /**
  *

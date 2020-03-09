@@ -7,6 +7,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,9 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.MultipartBody;
@@ -36,7 +40,7 @@ public class TeamEndpoint extends ServiceEndPoint
 {
 
     private final Map<Integer, Ninja> ninjas = new HashMap<>();
-    private final String hostBase;
+    protected final String hostBase;
 
     public TeamEndpoint(String baseUrl)
     {
@@ -58,6 +62,8 @@ public class TeamEndpoint extends ServiceEndPoint
 
     public List<Team> getTeams(List<Ninja> ninjaList) throws IOException
     {
+        LOG.debug("Getting the teams using: {}/list",getSafeURL());
+        LOG.debug("Host url: {}",hostBase);
         Map<Integer, Ninja> tmpNinjas = new HashMap<>();
         if (ninjaList == null || ninjaList.isEmpty())
         {
@@ -76,31 +82,23 @@ public class TeamEndpoint extends ServiceEndPoint
                             Function.identity())));
         }
         List<Team> teams = new ArrayList<>();
+        LOG.debug("Loading local teams");
         loadLocalTeams(tmpNinjas, teams);
-        HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list.php")
+        HttpResponse<JsonNode> response = Unirest.get(getSafeURL() + "list")
                 .asJson();
         JsonNode node = response.getBody();
+
         if (node != null && node.isArray())
         {
-            JSONArray arr = node.getArray();
-            for (int i = 0; i < arr.length(); ++i)
+            LOG.debug("Team response: {}",node.toString());
+            final Type type = new TypeToken<List<Team>>()
             {
-                Team t = new Team();
-                JSONObject obj = arr.getJSONObject(i);
-                t.setName(obj.getString("name"));
-                t.setDescription(obj.getString("description"));
-                t.setId(obj.getInt("id"));
-                JSONArray pos = obj.getJSONArray("positions");
-                for (int j = 0; j < pos.length(); ++j)
-                {
-                    t.getPositions().put(j,
-                            tmpNinjas.getOrDefault(pos.getInt(j),
-                                    null));
-                }
-                teams.add(t);
-            }
+            }.getType();
+            teams.addAll(new Gson().fromJson(node.toString(),type));
+            LOG.debug("Got Teams: {}",teams);
             return teams;
         }
+        LOG.debug("No response found");
         return Collections.emptyList();
     }
 
@@ -152,28 +150,13 @@ public class TeamEndpoint extends ServiceEndPoint
 
     public ErrorMessage uploadTeam(Team team, String token) throws IOException
     {
-        MultipartBody body = Unirest.post(
-                getSafeURL() + "upload.php/")
-                .field("name", team.getName())
-                .field("description", team.getDescription())
-                .field("token", token);
-        for (Map.Entry<Integer, Ninja> entry : team.getPositions().entrySet())
-        {
-            if (entry.getValue() != null)
-            {
-                body = body.field(entry.getKey() + "",
-                        "" + entry.getValue().getId());
-            }
-        }
-        HttpResponse<JsonNode> response = body.asJson();
-        JSONObject obj = response.getBody().getObject();
-        if (!obj.has("message"))
-        {
-            return new ErrorMessage("");
-        } else
-        {
-            return new ErrorMessage(obj.getString("message"));
-        }
+        HttpResponse<JsonNode> response = Unirest.post(
+                getSafeURL() + "upload")
+                .body(team)
+                .header("Content-Type", "application/json")
+                .asJson();
+        JsonNode node=response.getBody();
+        return new Gson().fromJson(node.toString(),ErrorMessage.class);
     }
 
     public ErrorMessage saveTeam(Team team) throws IOException

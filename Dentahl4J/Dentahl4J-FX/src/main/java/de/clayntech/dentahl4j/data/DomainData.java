@@ -23,17 +23,23 @@
  */
 package de.clayntech.dentahl4j.data;
 
-import java.util.Comparator;
+import de.clayntech.dentahl4j.domain.Ninja;
+import de.clayntech.dentahl4j.fx.custom.FXTeam;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.image.Image;
-import de.clayntech.dentahl4j.domain.Ninja;
-import de.clayntech.dentahl4j.fx.custom.FXTeam;
+
+import java.util.Comparator;
+import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 
 /**
  *
@@ -45,11 +51,14 @@ public class DomainData
     private static final DomainData INSTANCE = new DomainData();
     private final ObservableList<Ninja> ninjas = FXCollections.observableArrayList();
     private final SortedList<Ninja> sortedNinjas = new SortedList<>(ninjas);
+    private final FilteredList<Ninja> filteredNinjas=new FilteredList<>(sortedNinjas);
     private final ObservableMap<Ninja, Image> ninjaImages = FXCollections.observableHashMap();
     private final ReadOnlyIntegerWrapper minimumId = new ReadOnlyIntegerWrapper(
             -1);
     private final ReadOnlyIntegerWrapper maxId = new ReadOnlyIntegerWrapper(-1);
     private final ObservableList<FXTeam> teams = FXCollections.observableArrayList();
+    private final StringProperty nameFilter=new SimpleStringProperty("");
+
 
     public int getMaxId()
     {
@@ -76,6 +85,22 @@ public class DomainData
         sortedNinjas.setComparator(
                 Comparator.comparingInt(Ninja::getMain).reversed().thenComparingInt(
                         Ninja::getId));
+        filteredNinjas.setPredicate((n)->true);
+        filteredNinjas.predicateProperty().bind(Bindings.createObjectBinding(new Callable<Predicate<? super Ninja>>() {
+            @Override
+            public Predicate<? super Ninja> call() throws Exception {
+                return new Predicate<Ninja>() {
+                    @Override
+                    public boolean test(Ninja ninja) {
+                        String name=nameFilter.get();
+                        if(name==null||name.trim().isEmpty()) {
+                            return true;
+                        }
+                        return ninja.getName().contains(name);
+                    }
+                };
+            }
+        },nameFilter));
         minimumId.bind(Bindings.createIntegerBinding(
                 () -> ninjas.stream().mapToInt(Ninja::getId).min().orElse(-1),
                 ninjas));
@@ -84,6 +109,9 @@ public class DomainData
                 ninjas));
     }
 
+    public StringProperty nameFilterProperty() {
+        return nameFilter;
+    }
     public static DomainData getInstance()
     {
         return INSTANCE;
@@ -92,6 +120,10 @@ public class DomainData
     public ObservableList<Ninja> getNinjas()
     {
         return ninjas;
+    }
+
+    public FilteredList<Ninja> getFilteredNinjas() {
+        return filteredNinjas;
     }
 
     public SortedList<Ninja> getSortedNinjas()

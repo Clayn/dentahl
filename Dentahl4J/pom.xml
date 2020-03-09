@@ -13,6 +13,7 @@
         <module>dentahl4j-api</module>
         <module>dentahl4j-domain</module>
         <module>dentahl4j-fx</module>
+        <module>dentahl4j-server</module>
     </modules>
     <build>
         <plugins>

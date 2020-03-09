@@ -1,9 +1,9 @@
 # Dentahl
 
-[![Build Status](https://travis-ci.org/Clayn/dentahl.svg?branch=master)](https://travis-ci.org/Clayn/dentahl)
+[![Build Status](http://www.clayncraft.de:8080/buildStatus/icon?job=Dentahl%2Fmaster)](http://www.clayncraft.de:8080/job/Dentahl/job/master/)
 [![CodeFactor](https://www.codefactor.io/repository/github/clayn/dentahl/badge)](https://www.codefactor.io/repository/github/clayn/dentahl)
 
-Dentahl (german acronym for "**D**er **e**infache **N**aruto Online **T**eambau **A**ssistent von **H**idden **L**eaf (The simple Naruto Online team building assistend from Hidden Leaf)) is a hobby project to manage different teams and provide a way to share the teams between your friends. 
+Dentahl (german acronym for "**D**er **e**infache **N**aruto Online **T**eambau **A**ssistent von **H**idden **L**eaf (The simple Naruto Online team building assistant from Hidden Leaf)) is a hobby project to manage different teams and provide a way to share the teams between your friends. 
 Because you only have a limited amount of saveable teams in the game this toll gives you the option to save multiple teams either online or local. 
 The online storage uses a MySQL database with an PHP access layer which can be hosted on any compatible server. 
 At the moment the only supported client language is Java.
@@ -17,9 +17,5 @@ At the moment the client application will be released in two versions.
 The current release version is: 0.1.0
 
 ## Contribute
-Feel free to propose features you think are usefull and improve the Dentahl experience by creating new issues.
+Feel free to propose features you think are useful and improve the Dentahl experience by creating new issues.
 Also you may implement clients or libraries in other programming languages. 
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1NzE2OTkzNjksLTEwMzkyNzkwLDgwMT
-E3MzE1MV19
--->

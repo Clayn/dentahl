@@ -26,6 +26,7 @@ package de.clayntech.dentahl4j.server.db;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -36,6 +37,9 @@ import de.clayntech.dentahl4j.util.Cache;
 import de.clayntech.dentahl4j.server.db.util.DentahlMapper;
 import de.clayntech.dentahl4j.server.db.util.TeamMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -45,15 +49,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TeamRepository extends DentahlRepository<Team>
 {
-
     private final Cache cache=new Cache();
     
     @Autowired
     private NinjaRepository repository;
     
     {
+        LOG.info("Creating the team repository");
         cache.registerSupplier("ninjas", this::loadNinjas);
-    
     }
     private Map<Integer,Ninja> loadNinjas() {
         return repository.findAll().stream()
@@ -70,11 +73,63 @@ public class TeamRepository extends DentahlRepository<Team>
         return new TeamMapper();
     }
 
+    public int saveTeam(Team t) {
+        LOG.info("Checking Team: {}",t);
+        Team exists=getDBAccess().query("SELECT * FROM Team WHERE name=?", new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement) throws SQLException {
+                preparedStatement.setString(1,t.getName());
+            }
+        }, new ResultSetExtractor<Team>() {
+            @Override
+            public Team extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                return resultSet.next()?getMapper().mapRow(resultSet,0):null;
+            }
+        });
+        if(exists!=null) {
+            throw new IllegalArgumentException("Team name already exists");
+        }
+        LOG.info("Adding new team");
+        getDBAccess().update("INSERT INTO TEAM(name,description) VALUES (?,?)", new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement) throws SQLException {
+                preparedStatement.setString(1,t.getName());
+                preparedStatement.setString(2,t.getDescription());
+            }
+        });
+        Integer id=getDBAccess().query("SELECT id FROM Team WHERE name=?", new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement) throws SQLException {
+                preparedStatement.setString(1,t.getName());
+            }
+        }, new ResultSetExtractor<Integer>() {
+            @Override
+            public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                return resultSet.next()?resultSet.getInt("id"):-1;
+            }
+        });
+        LOG.info("Created id is: {}",id);
+        if(id!=null&&id>0) {
+            for (Map.Entry<Integer, Ninja> entry : t.getPositions().entrySet()) {
+                getDBAccess().update("INSERT INTO TeamNinja(position, team_id,ninja_id) VALUES (?,?,?)", new PreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement preparedStatement) throws SQLException {
+                        preparedStatement.setInt(1, entry.getKey());
+                        preparedStatement.setInt(2,id);
+                        preparedStatement.setInt(3,entry.getValue().getId());
+                    }
+                });
+            }
+        }
+        return id==null?-1:id;
+    }
+
     @Override
     public List<Team> findAll()
     {
         Map<Integer,Ninja> ninjas=getNinjas();
-        List<Team> teams=getDBAccess().query("SELECT * FROM Team", getRSExtractor());
+        List<Team> teams=getDBAccess().query("SELECT t.NAME, t.DESCRIPTION, t.ID\n" +
+                " FROM TEAM t\n", getRSExtractor());
         
         for(Team t:teams) {
             getDBAccess().query((Connection cnctn) ->
