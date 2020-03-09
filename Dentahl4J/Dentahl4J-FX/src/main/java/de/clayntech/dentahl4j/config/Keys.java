@@ -5,6 +5,7 @@ import de.clayntech.config4j.impl.key.KeyFactory;
 
 import javax.swing.*;
 import java.net.URL;
+import java.util.Locale;
 
 /**
  *
@@ -15,4 +16,5 @@ public interface Keys
 {
 
     Key<URL> REST_BASE = KeyFactory.createKey("dentahl.rest.base",URL.class);
+    Key<Locale> LANGUAGE=new LocaleKey("dentahl.locale");
 }

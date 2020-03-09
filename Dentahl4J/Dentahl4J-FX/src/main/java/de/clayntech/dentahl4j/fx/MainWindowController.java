@@ -11,6 +11,9 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import de.clayntech.config4j.Config4J;
+import de.clayntech.dentahl4j.fx.dialog.DDialogConfiguration;
+import de.clayntech.dentahl4j.fx.dialog.DentahlDDialogConfiguration;
+import de.clayntech.dentahl4j.fx.dialog.ErrorDDialog;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,13 +21,7 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
@@ -247,11 +244,12 @@ public class MainWindowController implements Initializable
                     DomainData.getInstance().getNinjas());
             DomainData.getInstance().getTeams().addAll(teams.stream().map(
                     FXTeam::fromDomainTeam).collect(Collectors.toList()));
-        } catch (IOException ex)
+        } catch (Exception ex)
         {
             Logger.getLogger(MainWindowController.class.getName()).log(
                     Level.SEVERE,
                     null, ex);
+            throw new RuntimeException(ex);
         }
     }
 

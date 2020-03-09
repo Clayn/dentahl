@@ -54,7 +54,7 @@
                     <vendor>clayn_osmato@gmx.de</vendor>
                     <mainClass>${mainClass}</mainClass>
                     <appName>Dentahl4J</appName>
-                    <nativeOutputDir>dist</nativeOutputDir>
+                    <nativeOutputDir>executable</nativeOutputDir>
                     <nativeReleaseVersion>${project.version}</nativeReleaseVersion>
                 </configuration>
             </plugin>

@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import de.clayntech.config4j.Config4J;
+import de.clayntech.dentahl4j.config.Keys;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -70,6 +73,10 @@ public class I18n
                                 "Loading resourcebundle for locale: " + newValue);
                         bundle.set(ResourceBundle.getBundle("i18n.language",
                                 newValue));
+                        if(oldValue==null||!newValue.equals(Config4J.getConfiguration().get(Keys.LANGUAGE))) {
+                            Config4J.getConfiguration().set(Keys.LANGUAGE,newValue);
+                            Config4J.saveConfiguration();
+                        }
                     } catch (Exception e)
                     {
                         System.out.println(
