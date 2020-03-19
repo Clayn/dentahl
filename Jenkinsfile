@@ -46,6 +46,7 @@ node {
             dir('dentahl4j-fx/target') {
                 if (isUnix()) {
                     sh "mkdir lib"
+                    sh "cp Dentahl4J-FX.jar lib/"
                     sh "'${jdk}/bin/jpackage' --name Dentahl4J --input lib --main-jar Dentahl4J-FX.jar"
                 } else {
                     bat(/"${jdk}\bin\jpackage" -DskipTests jfx:native/)
