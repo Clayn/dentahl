@@ -33,16 +33,16 @@ node {
         }
 
         stage('Build Native') {
-            dir('Dentahl4J-Server') {
-                if (isUnix()) {
-                    sh "'${mvnHome}/bin/mvn' -DskipTests jfx:native"
-                } else {
-                    bat(/"${mvnHome}\bin\mvn" -DskipTests jfx:native/)
-                }
+            //dir('Dentahl4J-Server') {
+             //   if (isUnix()) {
+             //       sh "'${mvnHome}/bin/mvn' -DskipTests jfx:native"
+             //   } else {
+             //       bat(/"${mvnHome}\bin\mvn" -DskipTests jfx:native/)
+             //   }
             }
             dir('Dentahl4J-FX/target') {
                 if (isUnix()) {
-                    sh "'${jdk}/bin/jpackage' -DskipTests jfx:native"
+                    sh "'${jdk}/bin/jpackage' --name Dentahl4J --main-jar Dentahl4J-FX.jar"
                 } else {
                     bat(/"${jdk}\bin\jpackage" -DskipTests jfx:native/)
                 }
