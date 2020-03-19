@@ -5,8 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J.iml" filepath="$PROJECT_DIR$/Dentahl4J/Dentahl4J.iml" />
       <module fileurl="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-API/Dentahl4J-API.iml" filepath="$PROJECT_DIR$/Dentahl4J/Dentahl4J-API/Dentahl4J-API.iml" />
       <module fileurl="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-Domain/Dentahl4J-Domain.iml" filepath="$PROJECT_DIR$/Dentahl4J/Dentahl4J-Domain/Dentahl4J-Domain.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-FX/Dentahl4J-FX.iml" filepath="$PROJECT_DIR$/Dentahl4J/Dentahl4J-FX/Dentahl4J-FX.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-Server/Dentahl4J-Server.iml" filepath="$PROJECT_DIR$/Dentahl4J/Dentahl4J-Server/Dentahl4J-Server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Dentahl4J/dentahl4j-fx/Dentahl4J-FX.iml" filepath="$PROJECT_DIR$/Dentahl4J/dentahl4j-fx/Dentahl4J-FX.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Dentahl4J/dentahl4j-server/Dentahl4J-Server.iml" filepath="$PROJECT_DIR$/Dentahl4J/dentahl4j-server/Dentahl4J-Server.iml" />
       <module fileurl="file://$PROJECT_DIR$/Dentahl4J/Dentahl4J-Tools/Dentahl4J-Tools.iml" filepath="$PROJECT_DIR$/Dentahl4J/Dentahl4J-Tools/Dentahl4J-Tools.iml" />
     </modules>
   </component>
