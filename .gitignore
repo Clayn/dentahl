@@ -1,0 +1,19 @@
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
+!/.mvn/wrapper/maven-wrapper.jar
+*.html
+/Dentahl4J/Dentahl4J-FX/data/
+/Dentahl4J/Dentahl4J-FX/dentahl.properties
+/Dentahl4J/Dentahl4J-FX/dist/
+/Dentahl4J/Dentahl4J-FX/executable/
+/Dentahl4J/Dentahl4J-Server/executable/
+/Dentahl4J/Dentahl4J-Server/dentahl/
