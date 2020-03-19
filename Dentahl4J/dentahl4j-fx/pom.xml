@@ -128,7 +128,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>Dentahl4J-FX.jar</finalName>
+                            <finalName>Dentahl4J-FX</finalName>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <transformers>
                                 <transformer implementation=

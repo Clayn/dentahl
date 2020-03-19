@@ -40,9 +40,13 @@ node {
              //       bat(/"${mvnHome}\bin\mvn" -DskipTests jfx:native/)
              //   }
            // }
-            dir('Dentahl4J-FX/target') {
+            dir('dentahl4j-fx') {
+                sh "'${mvnHome}/bin/mvn' -DskipTests package"
+            }
+            dir('dentahl4j-fx/target') {
                 if (isUnix()) {
-                    sh "'${jdk}/bin/jpackage' --name Dentahl4J --main-jar Dentahl4J-FX.jar"
+                    sh "mkdir lib"
+                    sh "'${jdk}/bin/jpackage' --name Dentahl4J --input lib --main-jar Dentahl4J-FX.jar"
                 } else {
                     bat(/"${jdk}\bin\jpackage" -DskipTests jfx:native/)
                 }
