@@ -2,20 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.bplaced.clayn</groupId>
-    <artifactId>d4j-fx</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <artifactId>dentahl4j-fx</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Dentahl4J-FX</name>
     <parent>
-        <groupId>net.bplaced.clayn</groupId>
-        <artifactId>d4j</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <groupId>de.clayntech</groupId>
+        <artifactId>dentahl4j</artifactId>
+        <version>0.2.0-SNAPSHOT</version>
     </parent>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mainClass>net.bplaced.clayn.d4j.fx.MainApp</mainClass>
+        <mainClass>de.clayntech.dentahl4j.Launcher</mainClass>
     </properties>
     
     <build>
@@ -55,9 +54,7 @@
                     <vendor>clayn_osmato@gmx.de</vendor>
                     <mainClass>${mainClass}</mainClass>
                     <appName>Dentahl4J</appName>
-                    
-                    <icon>${basedir}/src/main/deploy/package/windows/Dentahl4J.ico</icon>
-                    <nativeOutputDir>dist</nativeOutputDir>
+                    <nativeOutputDir>executable</nativeOutputDir>
                     <nativeReleaseVersion>${project.version}</nativeReleaseVersion>
                 </configuration>
             </plugin>
@@ -80,6 +77,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -92,7 +90,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${java.home}/../bin/javapackager</executable>
+                            <executable>${java.home}/bin/jpackager</executable>
                             <arguments>
                                 <argument>-createjar</argument>
                                 <argument>-nocss2bin</argument>
@@ -120,13 +118,34 @@
                     </execution>
                 </executions>  
             </plugin>
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <transformers>
+                                <transformer implementation=
+                                                     "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>de.clayntech.dentahl4j.Launcher</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>13</source>
+                    <target>13</target>
                     <compilerArguments>
                         <bootclasspath>${sun.boot.class.path}${path.separator}${java.home}/lib/jfxrt.jar</bootclasspath>
                     </compilerArguments>
@@ -152,6 +171,7 @@
                     </filesets>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -168,12 +188,60 @@
         <dependency>
             <groupId>org.jfxtras</groupId>
             <artifactId>jmetro</artifactId>
-            <version>5.2</version>
+            <version>11.6.9</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-controls</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-base</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.controlsfx</groupId>
+                    <artifactId>controlsfx</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>net.bplaced.clayn</groupId>
-            <artifactId>d4j-api</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
+            <groupId>de.clayntech</groupId>
+            <artifactId>dentahl4j-api</artifactId>
+            <version>0.2.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.clayntech</groupId>
+            <artifactId>config4j</artifactId>
+            <version>0.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>14</version>
         </dependency>
     </dependencies>
 </project>
