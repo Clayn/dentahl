@@ -29,12 +29,15 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.util.concurrent.Callable;
 
@@ -93,7 +96,7 @@ public class NinjaViewSkin extends SkinBase<NinjaView>
             public void handle(DragEvent event)
             {
                 if (event.getGestureSource() != pane
-                        && event.getDragboard().hasContent(NINJA_DATA_FORMAT) && control.isDragable() && control.isDragableDetail())
+                        && event.getDragboard().hasContent(NINJA_DATA_FORMAT) && control.isDragTargetEnabled()&&control.isDragable() && control.isDragableDetail())
                 {
                     event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                 }
@@ -105,7 +108,7 @@ public class NinjaViewSkin extends SkinBase<NinjaView>
             public void handle(DragEvent event)
             {
                 if (control.isTeamPosition() && event.getGestureSource() != pane
-                        && event.getDragboard().hasContent(NINJA_DATA_FORMAT) && control.isDragable() && control.isDragableDetail())
+                        && event.getDragboard().hasContent(NINJA_DATA_FORMAT) && control.isDragable()&&control.isDragTargetEnabled() && control.isDragableDetail())
                 {
                     if (!pane.getStyleClass().contains("team-drag-over"))
                     {
@@ -220,7 +223,24 @@ public class NinjaViewSkin extends SkinBase<NinjaView>
                 () -> control.getNinja() == null ? "Unkown" : control.getNinja().getName(),
                 control.ninjaProperty()));
         Tooltip.install(pane, tip);
-        getChildren().add(pane);
+        VBox holder=new VBox(pane);
+        Label l=new Label();
+        l.setWrapText(true);
+        if(control.getNinja()!=null) {
+            l.setText(control.getNinja().getName());
+        }
+        l.textProperty().bind(Bindings.createStringBinding(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return control.ninjaProperty().get()==null?"":control.getNinja().getName();
+            }
+        },control.ninjaProperty()));
+        l.getStyleClass().add("item-title");
+        VBox.setVgrow(l, Priority.ALWAYS);
+        l.setMaxHeight(Double.MAX_VALUE);
+        control.setMaxHeight(Double.MAX_VALUE);
+        holder.getChildren().add(l);
+        getChildren().add(holder);
     }
 
 }

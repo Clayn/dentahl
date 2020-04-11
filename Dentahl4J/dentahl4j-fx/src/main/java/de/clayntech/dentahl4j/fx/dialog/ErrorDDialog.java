@@ -18,6 +18,9 @@ public abstract class ErrorDDialog extends DDialog {
 
     @Override
     protected Alert prepareAlert(DDialogConfiguration config) {
+        if(config==null) {
+            return null;
+        }
         Alert al=super.prepareAlert(config);
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

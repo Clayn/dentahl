@@ -14,7 +14,7 @@ public class LocaleKey extends Key<Locale> {
     @Override
     public Locale fromString(String s) throws ValueParsingException {
         if(s==null||s.trim().isEmpty()) {
-            return null;
+            return Locale.ROOT;
         }
         return Locale.forLanguageTag(s);
     }

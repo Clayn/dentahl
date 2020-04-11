@@ -12,6 +12,9 @@ public abstract class DDialog {
     protected abstract DDialogConfiguration getConfiguration();
 
     protected Alert prepareAlert(DDialogConfiguration config) {
+        System.out.println("config: "+config);
+        System.out.println("config type: "+config.getType());
+        System.out.println("config base: "+config.getBundleBase());
         Alert al=new Alert(config.getType());
         al.setGraphic(config.getGraphic());
         ResourceBundle bundle=ResourceBundle.getBundle(config.getBundleBase(), I18n.getInstance().getLocale());

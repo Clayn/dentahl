@@ -1,5 +1,8 @@
 package de.clayntech.dentahl4j.config;
 
+import de.clayntech.dentahl4j.update.Updater;
+import de.clayntech.dentahl4j.update.WindowsUpdater;
+
 import java.io.File;
 
 public interface OS {
@@ -15,5 +18,9 @@ public interface OS {
 
     static File getOSDirectory(String directory) {
         return new File(getOSUserHome(),directory);
+    }
+
+    static Updater getUpdater() {
+        return new WindowsUpdater();
     }
 }

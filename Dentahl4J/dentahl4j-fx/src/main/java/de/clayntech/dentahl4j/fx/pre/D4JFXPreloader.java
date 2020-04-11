@@ -90,6 +90,7 @@ public class D4JFXPreloader implements Initializable
     private Label labelTask;
     @FXML
     private ProgressBar progressTask;
+    private ResourceBundle bundle;
 
     public boolean isFinished()
     {
@@ -101,10 +102,11 @@ public class D4JFXPreloader implements Initializable
         return finished.getReadOnlyProperty();
     }
 
-    public void doWork(Stage st, JMetro metro) throws IOException
+    public void doWork(Stage st, JMetro metro,ResourceBundle bundle) throws IOException
     {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(
                 "/fxml/Preloader.fxml"));
+        loader.setResources(bundle);
         Parent root = loader.load();
         D4JFXPreloader cont = loader.getController();
         Scene scene = new Scene(root);
@@ -123,7 +125,7 @@ public class D4JFXPreloader implements Initializable
             {
                 double taskCount = tasks.size();
                 double finishedTasks = 0;
-                String startTest = String.format("Task %d / %d",
+                String startTest = String.format(bundle.getString("task"),
                         (int) finishedTasks,
                         (int) taskCount);
                 if (labelAll == null)
@@ -148,7 +150,7 @@ public class D4JFXPreloader implements Initializable
                     task.run();
                     finishedTasks++;
                     setProgress(finishedTasks / taskCount, 0);
-                    String text = String.format("Task %d / %d",
+                    String text = String.format(bundle.getString("task"),
                             (int) finishedTasks,
                             (int) taskCount);
                     Platform.runLater(() -> labelAll.setText(text));
@@ -170,12 +172,13 @@ public class D4JFXPreloader implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        this.bundle=resources;
         progressAll.setProgress(-1);
         progressTask.setProgress(-1);
         Objects.requireNonNull(labelAll);
         Objects.requireNonNull(labelTask);
         LOG.debug("Init tasks");
-        initTasks();
+        initTasks(resources);
     }
 
     private final List<Ninja> ninjas = new ArrayList<>();
@@ -205,7 +208,7 @@ public class D4JFXPreloader implements Initializable
   return httpcon.getInputStream();
 }
 
-    private void initTasks()
+    private void initTasks(ResourceBundle resources)
     {
         tasks.add(new ProgressTask()
         {
@@ -214,7 +217,7 @@ public class D4JFXPreloader implements Initializable
             {
                 try
                 {
-                    setText("Lade Ninjas");
+                    setText(resources.getString("task.1.text"));
                     setProgress(-1);
                     ninjas.addAll(new NinjaServiceEndpoint(
                             Config4J.getConfiguration().get(
@@ -229,7 +232,7 @@ public class D4JFXPreloader implements Initializable
                     int i = 1;
                     for (Ninja n : ninjas)
                     {
-                        setText(String.format("Lade Ninja %d / %d", i++,
+                        setText(String.format(resources.getString("task.1.work"), i++,
                                 ninjas.size()));
                         File f = new File(dir, "" + n.getId() + ".ninja");
                         if (!f.exists())
@@ -280,7 +283,7 @@ public class D4JFXPreloader implements Initializable
                 try
                 {
                     int tries = 10;
-                    setText("Lade Ninjabilder");
+                    setText(resources.getString("task.2.text"));
                     setProgress(-1);
                     double count = ninjas.size();
                     double done = 0;
@@ -298,13 +301,13 @@ public class D4JFXPreloader implements Initializable
 
                         if (rest < 0)
                         {
-                            setText(String.format("Lade Bild %d / %d", i++,
+                            setText(String.format(resources.getString("task.2.work"), i++,
                                     ninjas.size()));
                         } else
                         {
                             setText(String.format(
-                                    "Lade Bild %d / %d. Eta: %s", i++,
-                                    ninjas.size(), getTimeString(rest)));
+                                    resources.getString("task.2.work"), i++,
+                                    ninjas.size()));
                         }
                         File imgFile = new File(dir, n.getId() + ".png");
                         long time1 = System.nanoTime();

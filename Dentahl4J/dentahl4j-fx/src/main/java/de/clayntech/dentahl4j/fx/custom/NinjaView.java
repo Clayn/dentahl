@@ -41,10 +41,23 @@ public class NinjaView extends Control
             true);
     private final ReadOnlyBooleanWrapper dragableDetail = new ReadOnlyBooleanWrapper(
             true);
+    private final ReadOnlyBooleanWrapper dragTargetEnabled=new ReadOnlyBooleanWrapper(false);
 
     public boolean isDragable()
     {
         return dragable.get();
+    }
+
+    public boolean isDragTargetEnabled() {
+        return dragTargetEnabled.get();
+    }
+
+    public ReadOnlyBooleanProperty dragTargetEnabledProperty() {
+        return dragTargetEnabled.getReadOnlyProperty();
+    }
+
+    ReadOnlyBooleanWrapper dragTargetEnabledPropertyAccess() {
+        return dragTargetEnabled;
     }
 
     public boolean isDragableDetail()

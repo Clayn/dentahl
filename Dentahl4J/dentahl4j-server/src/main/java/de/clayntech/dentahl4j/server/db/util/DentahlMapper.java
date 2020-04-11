@@ -27,6 +27,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -43,6 +45,24 @@ public abstract class DentahlMapper<T> implements RowMapper<T>, ResultSetExtract
     public T mapRow(ResultSet rs, int i) throws SQLException
     {
         return map(rs, i);
+    }
+
+    protected void getString(ResultSet rs, String name, String def, Consumer<String> setter) {
+        String val=def;
+        try {
+            val=rs.getString(name);
+        } catch (SQLException e) {
+        }
+        setter.accept(val);
+    }
+
+    protected void getInt(ResultSet rs, String name, int def, Consumer<Integer> setter) {
+        int val=def;
+        try {
+            val=rs.getInt(name);
+        } catch (SQLException e) {
+        }
+        setter.accept(val);
     }
 
     @Override

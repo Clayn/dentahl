@@ -52,7 +52,7 @@
 	<logger name="de.clayntech" level="debug">
 		<appender-ref ref="FILE" />
 	</logger>
-	<root level="info">
+	<root level="debug">
 		<appender-ref ref="GENERAL" />
 	</root>
 </configuration>

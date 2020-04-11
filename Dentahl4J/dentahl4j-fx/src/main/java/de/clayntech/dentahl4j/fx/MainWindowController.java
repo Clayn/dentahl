@@ -10,23 +10,34 @@ import de.clayntech.dentahl4j.fx.api.FXTeamService;
 import de.clayntech.dentahl4j.fx.custom.FXTeam;
 import de.clayntech.dentahl4j.fx.custom.NinjaView;
 import de.clayntech.dentahl4j.fx.custom.TeamView;
+import de.clayntech.dentahl4j.fx.util.UIUtils;
 import de.clayntech.dentahl4j.tooling.ApplicationTask;
 import de.clayntech.dentahl4j.tooling.TaskManager;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 import kong.unirest.Unirest;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
@@ -35,6 +46,10 @@ import java.util.stream.Collectors;
 public class MainWindowController implements Initializable {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
     private final TeamView team = new TeamView();
+    @FXML
+    public Button newButton;
+    @FXML
+    public Button refreshButton;
     @FXML
     private FlowPane ninjaPane;
     @FXML
@@ -78,6 +93,8 @@ public class MainWindowController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         translateMenuBar();
+        I18n.getInstance().bindTextProperty(newButton,newButton.getText());
+        I18n.getInstance().bindTextProperty(refreshButton,refreshButton.getText());
         clearMenu.disableProperty().bind(
                 teamList.getSelectionModel().selectedItemProperty().isNotNull());
         teamList.setItems(DomainData.getInstance().getTeams());
@@ -256,7 +273,6 @@ public class MainWindowController implements Initializable {
     @FXML
     private void onClear() {
         team.clear();
-
     }
 
     @FXML
@@ -266,5 +282,24 @@ public class MainWindowController implements Initializable {
             return;
         }
         teamList.getSelectionModel().clearSelection();
+    }
+
+    public void onRefresh(ActionEvent actionEvent) {
+        TaskManager.getTaskManager().callTask(Keys.TASK_LOAD_TEAMS);
+    }
+
+    public void showAbout(ActionEvent actionEvent) throws IOException {
+        FXMLLoader loader=new FXMLLoader(getClass().getResource("/fxml/dialog/UpdateDialog.fxml"));
+        loader.setResources(I18n.getInstance().getBundle());
+        Parent p=loader.load();
+        p.getStyleClass().add("background");
+        Scene sc=new Scene(p);
+        JMetro metro = new JMetro(sc, Style.DARK);
+        Stage st=new Stage();
+        UIUtils.setStageIcon(st);
+        st.setScene(sc);
+        st.initModality(Modality.APPLICATION_MODAL);
+        st.initOwner(root.getScene().getWindow());
+        st.show();
     }
 }

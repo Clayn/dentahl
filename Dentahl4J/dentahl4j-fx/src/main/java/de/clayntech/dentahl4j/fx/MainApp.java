@@ -3,14 +3,17 @@ package de.clayntech.dentahl4j.fx;
 import de.clayntech.config4j.Config4J;
 import de.clayntech.config4j.ConfigurationProvider;
 import de.clayntech.config4j.rt.Runtime4J;
-import de.clayntech.config4j.util.Config4JFileParser;
 import de.clayntech.dentahl4j.config.Keys;
 import de.clayntech.dentahl4j.config.OS;
 import de.clayntech.dentahl4j.fx.dialog.DDialogConfiguration;
 import de.clayntech.dentahl4j.fx.dialog.DentahlDDialogConfiguration;
 import de.clayntech.dentahl4j.fx.dialog.ErrorDDialog;
 import de.clayntech.dentahl4j.fx.pre.D4JFXPreloader;
+import de.clayntech.dentahl4j.fx.util.ProgressListener;
+import de.clayntech.dentahl4j.fx.util.UIUtils;
+import de.clayntech.dentahl4j.io.IO;
 import de.clayntech.dentahl4j.tooling.TaskManager;
+import de.clayntech.dentahl4j.update.WindowsUpdater;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -28,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
 import java.io.File;
+import java.net.URL;
 import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -54,11 +58,15 @@ public class MainApp extends Application implements Thread.UncaughtExceptionHand
         Runtime4J.getRuntime().reserveType(Keys.TASK_MANAGER, TaskManager.class);
         Runtime4J.getRuntime().setObject(Keys.TASK_MANAGER, TaskManager.getTaskManager());
         //Thread.setDefaultUncaughtExceptionHandler(this);
-        Config4J.setProvider(ConfigurationProvider.newOSDependedFileProvider("Dentahl","dentahl.properties"));
+        Config4J.setProvider(ConfigurationProvider.newOSDependedFileProvider("Dentahl4J","dentahl.properties"));
         //disableSSLCertificateCheck();
-        Config4J.importDefaultConfiguration(Config4JFileParser.loadConfiguration(getClass().getResourceAsStream("/dentahl.default.properties")));
+        //Config4J.importDefaultConfiguration(Config4JFileParser.loadConfiguration(getClass().getResourceAsStream("/dentahl.default.properties")));
+        Config4J.getConfiguration().set(Keys.REST_BASE,new URL("http://www.clayncraft.de:10000/dentahl/v2/"));
         Config4J.saveConfiguration();
         I18n.getInstance().setLocale(Config4J.getConfiguration().get(Keys.LANGUAGE, Locale.ROOT));
+        LOG.debug("Clearing the temporary directory");
+        File tmpDir=OS.getOSDirectory("tmp");
+        IO.clearDirectory(tmpDir.toPath());
     }
 
     private void disableSSLCertificateCheck() throws NoSuchAlgorithmException, KeyManagementException
@@ -120,10 +128,8 @@ public class MainApp extends Application implements Thread.UncaughtExceptionHand
             stage.setTitle("Dentahl");
             stage.setScene(scene);
             Stage pre = new Stage();
-            pre.getIcons().add(new Image(getClass().getResourceAsStream(
-                    "/images/icon.png")));
-            stage.getIcons().add(new Image(getClass().getResourceAsStream(
-                    "/images/icon.png")));
+            UIUtils.setStageIcon(pre);
+            UIUtils.setStageIcon(stage);
             pre.setTitle("Dentahl Preloader");
             D4JFXPreloader loader = new D4JFXPreloader();
             loader.finishedProperty().addListener(new ChangeListener<Boolean>() {
@@ -139,7 +145,7 @@ public class MainApp extends Application implements Thread.UncaughtExceptionHand
             });
             stage.setOnCloseRequest((evt) -> Unirest.shutDown());
             System.out.println("Showing the preloader");
-            loader.doWork(pre, metro);
+            loader.doWork(pre, metro,windowLoader.getResources());
 
         }catch (Exception e) {
             // We want to handle the exceptions with out handler first to show an error dialog while starting the application
@@ -167,7 +173,13 @@ public class MainApp extends Application implements Thread.UncaughtExceptionHand
 
             @Override
             protected DDialogConfiguration getConfiguration() {
-                return new DentahlDDialogConfiguration(Alert.AlertType.ERROR,"error");
+                try {
+                    return new DentahlDDialogConfiguration(Alert.AlertType.ERROR, "error");
+                }catch (Exception ex) {
+                    LOG.error("Failed to show the error dialog");
+                    e.printStackTrace();
+                    return null;
+                }
             }
         }.showAndWait();
     }

@@ -81,7 +81,11 @@ public class I18n
                 }
             }
         });
-        locale.setValue(Config4J.getConfiguration().get(Keys.LANGUAGE,Locale.ROOT));
+            bundle.set(ResourceBundle.getBundle("i18n.language",
+                    Locale.ROOT));
+            System.out.println("Bundle set to: "+bundle.get());
+        locale.set(Config4J.getConfiguration().get(Keys.LANGUAGE,Locale.ROOT));
+        System.out.println("Locale set to: "+locale);
     }
 
     public static I18n getInstance()

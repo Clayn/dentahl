@@ -74,6 +74,7 @@ public class TeamViewSkin extends SkinBase<TeamView>
             for (int x = 0; x < 3; ++x)
             {
                 NinjaView view = new NinjaView();
+                view.dragTargetEnabledPropertyAccess().set(true);
                 view.setPrefSize(100, 50);
                 view.ninjaProperty().addListener(new ChangeListener<Ninja>()
                 {
@@ -115,10 +116,8 @@ public class TeamViewSkin extends SkinBase<TeamView>
                     ObservableValue<? extends FXTeam> observable,
                     FXTeam oldValue, FXTeam newValue)
             {
-                if (newValue == null)
-                {
-                    views.stream().forEach((v) -> v.setNinja(null));
-                } else
+                 views.stream().forEach((v) -> v.setNinja(null));
+                if(newValue!=null)
                 {
                     for (Map.Entry<Integer, Ninja> entry : newValue.getPositions().entrySet())
                     {

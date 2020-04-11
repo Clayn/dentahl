@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<BorderPane prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.clayntech.dentahl4j.fx.dialog.UpdateDialogController">
+   <left>
+      <ImageView fitHeight="128.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+         <image>
+            <Image url="@../../images/icon.png" />
+         </image>
+      </ImageView>
+   </left>
+   <center>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <Label contentDisplay="RIGHT" text="%label.version" >
+               <graphic>
+                  <Label fx:id="versionLabel" />
+               </graphic>
+            </Label>
+            <StackPane prefHeight="150.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="checkButton" alignment="CENTER" mnemonicParsing="false" onAction="#doCheck" text="%btn.update.check" />
+                  <Button fx:id="updateButton" mnemonicParsing="false" onAction="#doUpdate" text="%btn.update.do" />
+                  <VBox fx:id="progressBox" alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label text="" fx:id="messageLabel"/>
+                        <ProgressBar prefWidth="200.0" progress="0.0" fx:id="updateProgress" />
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+         </children>
+      </VBox>
+   </center>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <bottom>
+      <Button mnemonicParsing="false" onAction="#onClose" text="%btn.close" BorderPane.alignment="TOP_CENTER" fx:id="closeButton" />
+   </bottom>
+</BorderPane>
