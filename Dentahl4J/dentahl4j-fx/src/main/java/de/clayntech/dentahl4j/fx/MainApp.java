@@ -65,7 +65,7 @@ public class MainApp extends Application implements Thread.UncaughtExceptionHand
         Config4J.saveConfiguration();
         I18n.getInstance().setLocale(Config4J.getConfiguration().get(Keys.LANGUAGE, Locale.ROOT));
         LOG.debug("Clearing the temporary directory");
-        File tmpDir=OS.getOSDirectory("tmp");
+        File tmpDir=OS.getOSDirectory("Temp");
         IO.clearDirectory(tmpDir.toPath());
     }
 

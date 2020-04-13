@@ -17,7 +17,7 @@
         <mainClass>de.clayntech.dentahl4j.Launcher</mainClass>
         <packager></packager>
         <bin.dir>dist</bin.dir>
-        <bin.version>2.3.0</bin.version>
+        <bin.version>2.4.0</bin.version>
     </properties>
     
     <build>
@@ -141,8 +141,13 @@
                         <argument>Clayntech</argument>
                         <argument>--app-version</argument>
                         <argument>${bin.version}</argument>
+                        <argument>--verbose</argument>
                         <argument>--icon</argument>
                         <argument>../resources/ninja.ico</argument>
+                        <argument>--win-upgrade-uuid</argument>
+                        <argument>d51e9200-635d-42d7-bef8-0f3e4ab10359</argument>
+                        <argument>--resource-dir</argument>
+                        <argument>../resources</argument>
                     </arguments>
                 </configuration>
             </plugin>
@@ -151,8 +156,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>14</source>
-                    <target>14</target>
+                    <source>13</source>
+                    <target>13</target>
                     <compilerArguments>
                         <!--suppress UnresolvedMavenProperty -->
                         <bootclasspath>${sun.boot.class.path}${path.separator}${java.home}/lib/jfxrt.jar</bootclasspath>

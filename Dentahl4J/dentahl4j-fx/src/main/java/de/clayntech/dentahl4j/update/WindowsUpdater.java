@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.List;
 
 public class WindowsUpdater implements Updater {
     private static final Logger LOG= LoggerFactory.getLogger(WindowsUpdater.class);
@@ -124,11 +126,13 @@ public class WindowsUpdater implements Updater {
         if(!isUpdateAvailable()) {
             return;
         }
-        Path tmpDir= OS.getOSDirectory("tmp").toPath();
+        Path tmpDir= OS.getOSDirectory("Temp").toPath();
         Files.createDirectories(tmpDir);
-        Path tmpFile=new File(tmpDir.toFile(),"update.msi").toPath();
+
+        String updateName=versionsProperties.getProperty("version."+remoteVersion);
+        String url=BINARY_BASE+updateName;
+        Path tmpFile=new File(tmpDir.toFile(),updateName).toPath();
         Files.createFile(tmpFile);
-        String url=BINARY_BASE+versionsProperties.getProperty("version."+remoteVersion);
         LOG.debug("Loading version {} from {} to {}",remoteVersion,url,tmpFile.toAbsolutePath());
         URL u=new URL(url);
         long fileSize=getFileSize(u);
@@ -140,12 +144,25 @@ public class WindowsUpdater implements Updater {
         },fileSize)) {
             Files.copy(in,tmpFile, StandardCopyOption.REPLACE_EXISTING);
         }
-        ProcessBuilder builder=new ProcessBuilder()
-                .directory(tmpDir.toFile())
+        List<String> commands=new ArrayList<>();
+        boolean launch=false;
+        File runFile=new File(System.getProperty("user.dir"),"Dentahl4J.exe");
+        LOG.debug("Checking for exe file: {}",runFile);
+        launch=runFile.exists();
+        LOG.debug("Exe file found: {}",launch);
+        commands.addAll(Arrays.asList("msiexec","/qb","/i",tmpFile.toAbsolutePath().toString()));
+        if(launch) {
+            commands.add(String.format("INSTALLDIR=%s",runFile.getParentFile().getAbsolutePath()));
+            ProcessBuilder builder=new ProcessBuilder()
+                    .directory(tmpDir.toFile())
 
-                .command("msiexec","/i",tmpFile.toAbsolutePath().toString());
-        LOG.debug("Starting update file: {}",tmpFile.toAbsolutePath().toString());
-        builder.start();
+                    .command(commands);
+            LOG.debug("Starting update file: {}",tmpFile.toAbsolutePath().toString());
+            builder.start();
+        }else if(Desktop.isDesktopSupported()&&Desktop.getDesktop().isSupported(Desktop.Action.OPEN)&&runFile.getParentFile()!=null&&runFile.getParentFile().exists()) {
+            Desktop.getDesktop().open(runFile.getParentFile());
+        }
+
         Platform.exit();
         System.exit(0);
     }
