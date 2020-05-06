@@ -1,10 +1,14 @@
 package de.clayntech.dentahl4j.server.data;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import de.clayntech.config4j.Config4J;
 import de.clayntech.config4j.Configuration;
 import de.clayntech.config4j.Key;
 import de.clayntech.config4j.impl.key.KeyFactory;
 import de.clayntech.dentahl4j.domain.Ninja;
+import de.clayntech.dentahl4j.server.db.NinjaRepository;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -13,8 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.tags.form.InputTag;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,68 +34,53 @@ public class Grabber {
 
     private static final Logger LOG= LoggerFactory.getLogger(Grabber.class);
     private static final Key<Boolean> DO_LOG_KEY= KeyFactory.createKey("dentahl.grabber.log",boolean.class);
-
     private boolean doLog=false;
     {
         doLog=LOG.isInfoEnabled()&&Config4J.getConfiguration().get(DO_LOG_KEY,false);
     }
 
-    public boolean isAvailable() {
-        File kon=new File(System.getProperty("user.dir"),"/dentahl/konoha.html");
-        Configuration configuration=Config4J.getConfiguration();
-        String firefox=configuration.get("dentahl.grabber.ff.binary","");
-        String driver=configuration.get("dentahl.grabber.ff.driver","");
-        LOG.info("Checking firefox: '{}' and driver '{}'",firefox,driver);
-        if(firefox==null||driver==null||firefox.isBlank()||driver.isBlank()) {
-
-            LOG.info("Checking file: {}",kon);
-            return kon.exists();
-        }
-        if(!Files.exists(Paths.get(firefox))||!Files.exists(Paths.get(driver))) {
-            LOG.info("Checking file: {}",kon);
-            return kon.exists();
-        }
-        return true;
-    }
-
     public List<Ninja> grabNinjas() throws IOException {
-        if(!isAvailable()) {
-            return Collections.emptyList();
-        }
-        File kon=new File(System.getProperty("user.dir"),"/dentahl/konoha.html");
-        String str="";
-        List<Ninja> ninjas = new ArrayList<>();
-        if(kon.exists()) {
-            LOG.info("Reading from: {}",kon);
-            str=Files.readString(kon.toPath(),Charset.defaultCharset());
-        }else {
-            Configuration configuration = Config4J.getConfiguration();
-            String firefox = configuration.get("dentahl.grabber.ff.binary");
-            String driver = configuration.get("dentahl.grabber.ff.driver");
-            FirefoxBinary bin = new FirefoxBinary();
-            System.setProperty("webdriver.gecko.driver", driver);
-            String url = "https://en.konohaproxy.com.br/";
-            FirefoxOptions firefoxOptions = new FirefoxOptions();
-            firefoxOptions.setBinary(bin);
-            firefoxOptions.setHeadless(true);
-            FirefoxDriver ffDriver = new FirefoxDriver(firefoxOptions);
-            ffDriver.get(url);
-            try {
-                do {
-                    Thread.sleep(500);
-                    str = ffDriver.getPageSource();
-                } while (!str.contains("Shisui"));
-                Thread.sleep(2000);
-            } catch (InterruptedException ex) {
-                LOG.error("The ninja loading was interrupted", ex);
-                return Collections.emptyList();
+        List<Ninja> ninjas=new ArrayList<>();
+        String url="https://en.konohaproxy.com.br/ugc1/getHuoyingData/dataen";
+        URL u=new URL(url);
+        URLConnection con=u.openConnection();
+        String json="";
+        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+        try(InputStream in=con.getInputStream();ByteArrayOutputStream bout=new ByteArrayOutputStream()) {
+            int read=-1;
+            byte[] buffer=new byte[128];
+            while((read=in.read(buffer))!=-1) {
+                bout.write(buffer,0,read);
             }
-            str = ffDriver.getPageSource();
-            ffDriver.close();
+            bout.flush();
+            json=new String(bout.toByteArray());
         }
-        ninjas.addAll(DataExtractor.extractNinjas(new ByteArrayInputStream(str.getBytes(Charset.defaultCharset()))));
-        if(kon.exists()) {
-            //kon.delete();
+
+        Gson gson=new Gson();
+        JsonObject jobject=gson.fromJson(json,JsonObject.class);
+        if(jobject.has("data")) {
+           JsonObject inner=jobject.getAsJsonObject("data");
+           if(inner.has("ninjas")) {
+               JsonArray arr=inner.getAsJsonArray("ninjas");
+               for(int i=0;i<arr.size();++i) {
+                   JsonObject obj=arr.get(i).getAsJsonObject();
+                   if(obj.has("szPicUrl")) {
+                       if(obj.has("iNid")) {
+                           PojoNinja pn=gson.fromJson(arr.get(i),PojoNinja.class);
+                           if(doLog) {
+                               LOG.info("Grabbed ninja: {}", pn.getSzName());
+                           }
+                           Ninja n=pn.toNinja("https://en.konohaproxy.com.br/include/images/ninja/","https://en.konohaproxy.com.br/include/images/ninja2/");
+                           if(n.getMain()==0) {
+                               ninjas.add(n);
+                           }
+                       }
+                   }
+               }
+           }
+        }
+        if(doLog) {
+            LOG.info("Grabbed {} ninjas", ninjas.size());
         }
         return ninjas;
     }

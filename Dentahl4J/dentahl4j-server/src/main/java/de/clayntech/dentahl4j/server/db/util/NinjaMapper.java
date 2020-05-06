@@ -38,7 +38,7 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
  *
  * @author Clayn <clayn_osmato@gmx.de>
  */
-public class NinjaMapper extends DentahlMapper<Ninja> implements DBInserter<Ninja>
+public class NinjaMapper extends DentahlMapper<Ninja>
 {
 
     @Override
@@ -58,19 +58,5 @@ public class NinjaMapper extends DentahlMapper<Ninja> implements DBInserter<Ninj
                     ex);
             return null;
         }
-    }
-
-    @Override
-    public void insert(JdbcTemplate con, Ninja obj) throws Exception {
-        con.update("INSERT INTO Ninja(id,name,image,element,main) VALUES (?,?,?,?,?)", new PreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement preparedStatement) throws SQLException {
-                preparedStatement.setInt(1,obj.getId());
-                preparedStatement.setString(2,obj.getName());
-                preparedStatement.setString(3,obj.getImage()!=null?obj.getImage().toString():"");
-                preparedStatement.setInt(4,obj.getElement());
-                preparedStatement.setInt(5,obj.getMain());
-            }
-        });
     }
 }

@@ -151,5 +151,9 @@ public class TeamRepository extends DentahlRepository<Team>
         }
         return teams;
     }
-    
+
+    @Override
+    public void insert(Team obj) throws Exception {
+        saveTeam(obj);
+    }
 }

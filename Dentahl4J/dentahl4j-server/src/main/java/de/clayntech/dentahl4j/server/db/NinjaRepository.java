@@ -26,6 +26,7 @@ package de.clayntech.dentahl4j.server.db;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,11 +51,24 @@ import org.springframework.stereotype.Repository;
 public class NinjaRepository extends DentahlRepository<Ninja>
 {
 
-    private static final String INSERT="INSERT INTO `Ninja` (`id`, `name`, `image`, `element`) VALUES (?, ?, ?, ?)";
+    private static final String INSERT="INSERT INTO `Ninja` (`id`, `name`, `image`, `element`, `main`) VALUES (?, ?, ?, ?,? )";
     @Autowired
     private Grabber grabber;
     {
         LOG.info("Creating the ninja repository");
+        Thread t=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                    refreshNinjas();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.setDaemon(true);
+        t.start();
     }
     @Override
     protected DentahlMapper<Ninja> getMapper()
@@ -77,25 +91,44 @@ public class NinjaRepository extends DentahlRepository<Ninja>
     protected void refreshNinjas() throws IOException, InterruptedException {
         LOG.info("Refreshing the Ninja List");
         List<Ninja> loaded=grabber.grabNinjas();
+
         List<Ninja> existing=findAll();
         List<Ninja> missing=loaded.stream()
                 .filter((n)->!existing.contains(n))
                 .collect(Collectors.toList());
+        List<Ninja> notToAdd=new ArrayList<>(5);
+        for(Ninja n:loaded) {
+            if(n.getMain()!=0) {
+                notToAdd.add(n);
+            }
+        }
+        loaded.removeAll(notToAdd);
+        NinjaMapper mapper= (NinjaMapper) getMapper();
         if(!missing.isEmpty()) {
             for(Ninja n:missing) {
-                getDBAccess().update(INSERT, new PreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement preparedStatement) throws SQLException {
-                        preparedStatement.setInt(1,n.getId());
-                        preparedStatement.setString(2,n.getName());
-                        preparedStatement.setString(3,n.getImage().toString());
-                        preparedStatement.setInt(4,n.getElement());
-                    }
-                });
+                try {
+                    insert(n);
+                } catch (Exception e) {
+                    LOG.error("Failed to add: {}",n.getName(),e);
+                }
             }
         }
         else {
             LOG.info("No new ninjas found");
         }
+    }
+
+    @Override
+    public void insert(Ninja obj) throws Exception {
+        getDBAccess().update(INSERT, new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement) throws SQLException {
+                preparedStatement.setInt(1,obj.getId());
+                preparedStatement.setString(2,obj.getName());
+                preparedStatement.setString(3,obj.getImage()!=null?obj.getImage().toString():"");
+                preparedStatement.setInt(4,obj.getElement());
+                preparedStatement.setInt(5,obj.getMain());
+            }
+        });
     }
 }

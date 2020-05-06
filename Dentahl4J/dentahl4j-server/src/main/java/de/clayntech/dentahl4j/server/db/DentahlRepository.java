@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import de.clayntech.dentahl4j.domain.Element;
 import de.clayntech.dentahl4j.domain.Ninja;
+import de.clayntech.dentahl4j.server.db.util.DBInserter;
 import de.clayntech.dentahl4j.server.db.util.DentahlMapper;
 import de.clayntech.dentahl4j.server.db.util.ElementMapper;
 import de.clayntech.dentahl4j.server.db.util.NinjaMapper;
@@ -53,7 +54,7 @@ import org.springframework.stereotype.Repository;
  * @author Clayn <clayn_osmato@gmx.de>
  */
 @Repository
-public abstract class DentahlRepository<T>
+public abstract class DentahlRepository<T> implements DBInserter<T>
 {
 
     private static final Map<Element, String> ICON_URLS = new HashMap<>();
