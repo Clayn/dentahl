@@ -25,17 +25,20 @@ package de.clayntech.dentahl4j.server.db.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import de.clayntech.dentahl4j.domain.Ninja;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 
 /**
  *
  * @author Clayn <clayn_osmato@gmx.de>
  */
-public class NinjaMapper extends DentahlMapper<Ninja>
+public class NinjaMapper extends DentahlMapper<Ninja> implements DBInserter<Ninja>
 {
 
     @Override
@@ -56,5 +59,18 @@ public class NinjaMapper extends DentahlMapper<Ninja>
             return null;
         }
     }
-    
+
+    @Override
+    public void insert(JdbcTemplate con, Ninja obj) throws Exception {
+        con.update("INSERT INTO Ninja(id,name,image,element,main) VALUES (?,?,?,?,?)", new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement) throws SQLException {
+                preparedStatement.setInt(1,obj.getId());
+                preparedStatement.setString(2,obj.getName());
+                preparedStatement.setString(3,obj.getImage()!=null?obj.getImage().toString():"");
+                preparedStatement.setInt(4,obj.getElement());
+                preparedStatement.setInt(5,obj.getMain());
+            }
+        });
+    }
 }
